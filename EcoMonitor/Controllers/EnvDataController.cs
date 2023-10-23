@@ -71,7 +71,7 @@ namespace EcoMonitor.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
 
@@ -111,7 +111,7 @@ namespace EcoMonitor.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
         [HttpPost, Route("CreateEnvFactor")]
@@ -171,7 +171,7 @@ namespace EcoMonitor.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
 
@@ -273,7 +273,7 @@ namespace EcoMonitor.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500,_response);
         }
 
         [HttpPut(Name = "UpdateEnvFactor")]
@@ -336,7 +336,7 @@ namespace EcoMonitor.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
     }
 }

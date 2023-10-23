@@ -10,10 +10,6 @@ namespace EcoMonitor.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "data",
-                table: "companies");
-
             migrationBuilder.AddColumn<string>(
                 name: "data",
                 table: "passports",
@@ -28,11 +24,6 @@ namespace EcoMonitor.Migrations
                 name: "data",
                 table: "passports");
 
-            migrationBuilder.AddColumn<string>(
-                name: "data",
-                table: "companies",
-                type: "longtext",
-                nullable: true);
         }
     }
 }

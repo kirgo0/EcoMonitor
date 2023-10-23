@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
-    option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
+    option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQL"));
 });
 
 builder.Services.Configure<ApiBehaviorOptions>(opt =>

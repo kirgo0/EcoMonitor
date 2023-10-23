@@ -48,12 +48,13 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { e.ToString() };
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
         [HttpGet("id:int", Name = "GetCompany")]
@@ -85,12 +86,13 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { e.ToString() };
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
 
@@ -137,10 +139,11 @@ namespace EcoMonitor.Controllers
             }
             catch (Exception ex)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
 
@@ -171,10 +174,11 @@ namespace EcoMonitor.Controllers
             }
             catch (Exception ex)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
 
         [HttpPut(Name = "UpdateCompany")]
@@ -224,10 +228,11 @@ namespace EcoMonitor.Controllers
             }
             catch (Exception ex)
             {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return _response;
+            return StatusCode(500, _response);
         }
     }
 }
