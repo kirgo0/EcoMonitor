@@ -9,8 +9,6 @@ namespace EcoMonitor.Model.DTO
 
         [Required]
         public int id { get; set; }
-        [MaxLength(45)]
-        public string name { get; set; }
 
         [Required]
         public int year { get; set; }

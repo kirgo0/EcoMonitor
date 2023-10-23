@@ -4,6 +4,9 @@ using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using System.Net;
 
 namespace EcoMonitor.Controllers
@@ -102,13 +105,19 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
-        public async Task<ActionResult<APIResponse>> CreateCompany([FromBody] PassportCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreatePassport([FromBody] PassportCreateDTO createDTO)
         {
-            if (createDTO == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ModelState.ToString());
+                foreach (var modelError in ModelState.Values)
+                {
+                    foreach (ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
                 return BadRequest(_response);
             }
             try
@@ -129,6 +138,17 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
 
+            }
+            catch (DbUpdateException ex)
+            {
+                MySqlException innerException = ex.InnerException as MySqlException;
+                if (innerException != null && (innerException.Number == 1062))
+                {
+                    _response.StatusCode = HttpStatusCode.Conflict;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    return Conflict(_response);
+                }
             }
             catch (Exception ex)
             {
@@ -179,11 +199,17 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponse>> UpdatePassport([FromBody] PassportUpdateDTO updateDTO)
         {
-            if (updateDTO == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ModelState.ToString());
+                foreach (var modelError in ModelState.Values)
+                {
+                    foreach (ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
                 return BadRequest(_response);
             }
             try
@@ -210,6 +236,17 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
 
+            }
+            catch (DbUpdateException ex)
+            {
+                MySqlException innerException = ex.InnerException as MySqlException;
+                if (innerException != null && (innerException.Number == 1062))
+                {
+                    _response.StatusCode = HttpStatusCode.Conflict;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    return Conflict(_response);
+                }
             }
             catch (Exception ex)
             {

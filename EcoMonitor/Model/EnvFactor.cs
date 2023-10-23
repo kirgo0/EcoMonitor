@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EcoMonitor.Migrations;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoMonitor.Model
 {
+    [Index(nameof(factor_Name), nameof(passport_id), IsUnique = true)]
     public class EnvFactor
     {
         [Key]

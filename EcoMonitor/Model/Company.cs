@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace EcoMonitor.Model
 {
+    [Index(nameof(name), IsUnique = true)]
     public class Company
     {
         [Key]

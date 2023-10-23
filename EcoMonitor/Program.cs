@@ -2,6 +2,7 @@ using EcoMonitor;
 using EcoMonitor.Data;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
-    option.UseMySQL(builder.Configuration.GetConnectionString("MySQl"));
+    option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(opt =>
+{
+    opt.SuppressModelStateInvalidFilter = true;
 });
 
 builder.Services.AddScoped<IEnvFactorRepository,EnvFactorRepository>();

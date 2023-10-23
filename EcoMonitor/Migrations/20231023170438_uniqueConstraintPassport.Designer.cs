@@ -2,6 +2,7 @@
 using EcoMonitor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231023170438_uniqueConstraintPassport")]
+    partial class uniqueConstraintPassport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,9 +75,6 @@ namespace EcoMonitor.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("passport_id");
-
-                    b.HasIndex("factor_Name", "passport_id")
-                        .IsUnique();
 
                     b.ToTable("env_Factors");
                 });

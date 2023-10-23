@@ -2,7 +2,11 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using System.Net;
 
 namespace EcoMonitor.Controllers
@@ -92,28 +96,26 @@ namespace EcoMonitor.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
         public async Task<ActionResult<APIResponse>> CreateCompany([FromBody] CompanyCreateDTO createDTO)
         {
-            if (createDTO == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ModelState.ToString());
+                foreach(var modelError in ModelState.Values)
+                {
+                    foreach(ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
                 return BadRequest(_response);
             }
             try
             {
-                //if (await _dbCompany.GetAsync(c => c.name.ToLower() == createDTO.name.ToLower()) != null)
-                //{
-                //    _response.StatusCode = HttpStatusCode.Conflict;
-                //    _response.IsSuccess = false;
-                //    _response.ErrorMessages.Add("Company already Exists!");
-                //    return Conflict(_response);
-                //}
-
                 Company company = _mapper.Map<Company>(createDTO);
 
                 await _dbCompany.CreateAsync(company);
@@ -121,6 +123,17 @@ namespace EcoMonitor.Controllers
                 _response.StatusCode = HttpStatusCode.Created;
 
                 return CreatedAtRoute("GetCompany", new { id = company.id }, _response);
+            }
+            catch (DbUpdateException ex)
+            {
+                MySqlException innerException = ex.InnerException as MySqlException;
+                if (innerException != null && (innerException.Number == 1062))
+                {
+                    _response.StatusCode = HttpStatusCode.Conflict;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Company with this name already exists");
+                    return Conflict(_response);
+                }
             }
             catch (Exception ex)
             {
@@ -167,14 +180,21 @@ namespace EcoMonitor.Controllers
         [HttpPut(Name = "UpdateCompany")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponse>> UpdateCompany([FromBody] CompanyUpdateDTO updateDTO)
         {
-            if (updateDTO == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ModelState.ToString());
+                foreach (var modelError in ModelState.Values)
+                {
+                    foreach (ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
                 return BadRequest(_response);
             }
             try
@@ -190,6 +210,17 @@ namespace EcoMonitor.Controllers
                 await _dbCompany.UpdateAsync(model);
                 return NoContent();
 
+            }
+            catch (DbUpdateException ex)
+            {
+                MySqlException innerException = ex.InnerException as MySqlException;
+                if (innerException != null && (innerException.Number == 1062))
+                {
+                    _response.StatusCode = HttpStatusCode.Conflict;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Company with this name already exists");
+                    return Conflict(_response);
+                }
             }
             catch (Exception ex)
             {

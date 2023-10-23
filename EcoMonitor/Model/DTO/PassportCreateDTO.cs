@@ -5,10 +5,6 @@ namespace EcoMonitor.Model.DTO
     public class PassportCreateDTO
     {
         [Required]
-        [MaxLength(45)]
-        public string name { get; set; }
-
-        [Required]
         [Range(2000,2030)]
         public int year { get; set; }
         public string data2 { get; set; }

@@ -2,6 +2,7 @@
 using EcoMonitor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231023150254_fix3")]
+    partial class fix3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,6 +26,9 @@ namespace EcoMonitor.Migrations
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("data")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("data1")
                         .HasColumnType("longtext");
@@ -45,9 +51,6 @@ namespace EcoMonitor.Migrations
                         .HasColumnType("varchar(45)");
 
                     b.HasKey("id");
-
-                    b.HasIndex("name")
-                        .IsUnique();
 
                     b.ToTable("companies");
                 });
@@ -73,9 +76,6 @@ namespace EcoMonitor.Migrations
 
                     b.HasIndex("passport_id");
 
-                    b.HasIndex("factor_Name", "passport_id")
-                        .IsUnique();
-
                     b.ToTable("env_Factors");
                 });
 
@@ -100,15 +100,17 @@ namespace EcoMonitor.Migrations
                     b.Property<string>("data5")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
+
                     b.Property<int>("year")
                         .HasColumnType("YEAR(4)");
 
                     b.HasKey("id");
 
                     b.HasIndex("company_id");
-
-                    b.HasIndex("year", "company_id")
-                        .IsUnique();
 
                     b.ToTable("passports");
                 });
