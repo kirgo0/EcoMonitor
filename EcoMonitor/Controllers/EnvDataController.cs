@@ -333,7 +333,7 @@ namespace EcoMonitor.Controllers
             {
                 EnvFactor model = _mapper.Map<EnvFactor>(updateDTO);
 
-                if(await _dbEnv.GetAsync(u => u.id == model.id) == null)
+                if (await _dbEnv.GetAsync(u => u.id == model.id, false) == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
