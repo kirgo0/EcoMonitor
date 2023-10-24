@@ -30,12 +30,46 @@ namespace EcoMonitor.Controllers
             _dbPassport = dbPassport;
         }
 
-        [HttpGet("passport_id:int", Name = "GetAllEnvFactors")]
+
+        [HttpGet(Name = "GetAllEnvFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetAllEnvFactors(int passport_id)
+        public async Task<ActionResult<APIResponse>> GetAllEnvFactors()
+        {
+            try
+            {
+                IEnumerable<EnvFactor> factors = await _dbEnv.GetAllAsync();
+                var result = _mapper.Map<IEnumerable<EnvFactorDTO>>(factors);
+                _response.Result = result;
+                if (result.Count() != 0)
+                {
+                    _response.StatusCode = HttpStatusCode.OK;
+                    return Ok(_response);
+                }
+                else
+                {
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    return NoContent();
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
+        }
+
+
+        [HttpGet("passport_id:int", Name = "GetEnvFactorsByPassport")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
+        public async Task<ActionResult<APIResponse>> GetEnvFactorsByPassport(int passport_id)
         {
             if(passport_id < 0)
             {
