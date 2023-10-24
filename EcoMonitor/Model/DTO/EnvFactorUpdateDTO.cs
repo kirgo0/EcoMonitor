@@ -9,7 +9,7 @@ namespace EcoMonitor.Model.DTO
         [Range(0,int.MaxValue)]
         public int id { get; set; }
         [Required]
-        [MaxLength(50)]
+        [MaxLength(150)]
         public string factor_Name { get; set; }
         [Required]
         [Range(0,double.MaxValue)]

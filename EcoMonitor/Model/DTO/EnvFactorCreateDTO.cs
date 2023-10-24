@@ -6,7 +6,7 @@ namespace EcoMonitor.Model.DTO
     public class EnvFactorCreateDTO
     {
         [Required]
-        [MaxLength(50)]
+        [MaxLength(150)]
         public string factor_Name { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
