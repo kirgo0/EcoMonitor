@@ -11,6 +11,7 @@ namespace EcoMonitor.Data
         public DbSet<EnvFactor> env_Factors { get; set; }
         public DbSet<Passport> passports { get; set; }
         public DbSet<Company> companies { get; set; }
+        public DbSet<RfcFactor> rfc_Factors { get; set; }
       
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

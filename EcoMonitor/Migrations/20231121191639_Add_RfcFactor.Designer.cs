@@ -2,6 +2,7 @@
 using EcoMonitor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231121191639_Add_RfcFactor")]
+    partial class Add_RfcFactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,14 +69,9 @@ namespace EcoMonitor.Migrations
                     b.Property<int>("passport_id")
                         .HasColumnType("int");
 
-                    b.Property<int>("rfc_factor_id")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
                     b.HasIndex("passport_id");
-
-                    b.HasIndex("rfc_factor_id");
 
                     b.HasIndex("factor_Name", "passport_id")
                         .IsUnique();
@@ -131,9 +129,6 @@ namespace EcoMonitor.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("factor_Name")
-                        .IsUnique();
-
                     b.ToTable("rfc_Factors");
                 });
 
@@ -145,15 +140,7 @@ namespace EcoMonitor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EcoMonitor.Model.RfcFactor", "RfcFactor")
-                        .WithMany()
-                        .HasForeignKey("rfc_factor_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Passport");
-
-                    b.Navigation("RfcFactor");
                 });
 
             modelBuilder.Entity("EcoMonitor.Model.Passport", b =>

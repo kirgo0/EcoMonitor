@@ -2,13 +2,10 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Crypto;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace EcoMonitor.Controllers
@@ -19,15 +16,17 @@ namespace EcoMonitor.Controllers
     {
         protected APIResponse _response;
         private readonly IEnvFactorRepository _dbEnv;
+        private readonly IRfcFactorRepository _dbRfc;
         private readonly IPassportRepository _dbPassport;
         private readonly IMapper _mapper;
 
-        public EnvDataController(IEnvFactorRepository dbEnv, IMapper mapper, IPassportRepository dbPassport)
+        public EnvDataController(IEnvFactorRepository dbEnv, IMapper mapper, IPassportRepository dbPassport, IRfcFactorRepository dbRfc)
         {
             _response = new();
             _dbEnv = dbEnv;
             _mapper = mapper;
             _dbPassport = dbPassport;
+            _dbRfc = dbRfc;
         }
 
 
@@ -170,7 +169,9 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                if(await _dbPassport.GetAsync(p => p.id == createDTO.passport_id) != null)
+                var passport = await _dbPassport.GetAsync(p => p.id == createDTO.passport_id);
+                var rfc = await _dbRfc.GetAsync(r => r.id == createDTO.rfc_factor_id);
+                if (passport != null && rfc != null)
                 {
                     EnvFactor envFactor = _mapper.Map<EnvFactor>(createDTO);
 
@@ -183,7 +184,10 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No passport with this id was found!");
+                    if (passport == null)
+                        _response.ErrorMessages.Add($"No passport with this id:{createDTO.passport_id} was found!");
+                    if (rfc == null)
+                        _response.ErrorMessages.Add($"No rfc factor with this id:{createDTO.rfc_factor_id} was found!");
                     return NotFound(_response);
                 }
 
@@ -241,7 +245,9 @@ namespace EcoMonitor.Controllers
                 APIResponse response = new APIResponse();
                 try
                 {
-                    if (await _dbPassport.GetAsync(p => p.id == createDTO.passport_id) != null)
+                    var passport = await _dbPassport.GetAsync(p => p.id == createDTO.passport_id);
+                    var rfc = await _dbRfc.GetAsync(r => r.id == createDTO.rfc_factor_id);
+                    if (passport != null && rfc != null)
                     {
                         EnvFactor envFactor = _mapper.Map<EnvFactor>(createDTO);
 
@@ -261,7 +267,10 @@ namespace EcoMonitor.Controllers
                     {
                         response.StatusCode = HttpStatusCode.NotFound;
                         response.IsSuccess = false;
-                        response.ErrorMessages.Add($"No passport with this id:{createDTO.passport_id} was found!");
+                        if(passport == null) 
+                            response.ErrorMessages.Add($"No passport with this id:{createDTO.passport_id} was found!");
+                        if(rfc == null) 
+                            response.ErrorMessages.Add($"No rfc factor with this id:{createDTO.rfc_factor_id} was found!");
                     }
                     multipleResponse.apiResponses.Add(response);
                 }
@@ -340,7 +349,9 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
 
-                if (await _dbPassport.GetAsync(p => p.id == updateDTO.passport_id) != null)
+                var passport = await _dbPassport.GetAsync(p => p.id == updateDTO.passport_id);
+                var rfc = await _dbRfc.GetAsync(r => r.id == updateDTO.rfc_factor_id);
+                if (passport != null && rfc != null)
                 {
                     await _dbEnv.UpdateAsync(model);
                     return NoContent();

@@ -12,6 +12,14 @@ namespace EcoMonitor.Model.DTO
         [Range(0, double.MaxValue)]
         public double factor_value { get; set; }
         [Required]
+        [Range(0, int.MaxValue)]
         public int passport_id { get; set; }
+        [Range(0, double.MaxValue)]
+        public double factor_Ca_value { get; set; }
+        [Range(0, double.MaxValue)]
+        public double factor_Ch_value { get; set; }
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int rfc_factor_id { get; set; }
     }
 }

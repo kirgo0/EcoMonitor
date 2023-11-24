@@ -11,6 +11,10 @@ namespace EcoMonitor
             CreateMap<EnvFactor, EnvFactorDTO>().ReverseMap();
             CreateMap<EnvFactorCreateDTO, EnvFactor>().ReverseMap();
             CreateMap<EnvFactorUpdateDTO, EnvFactor>().ReverseMap();
+            
+            CreateMap<RfcFactor, RfcFactorDTO>().ReverseMap();
+            CreateMap<RfcFactorCreateDTO, RfcFactor>().ReverseMap();
+            CreateMap<RfcFactorUpdateDTO, RfcFactor>().ReverseMap();
 
             CreateMap<Company, CompanyDTO>().ReverseMap();
             CreateMap<CompanyCreateDTO, Company>().ReverseMap();

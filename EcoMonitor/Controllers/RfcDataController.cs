@@ -2,7 +2,6 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -12,33 +11,33 @@ using System.Net;
 namespace EcoMonitor.Controllers
 {
     [ApiController]
-    [Route("api/PassportData")]
-    public class PassportDataController : Controller
+    [Route("api/RfcData")]
+    public class RfcDataController : Controller
     {
 
         protected APIResponse _response;
-        private readonly IPassportRepository _dbPassport;
-        private readonly ICompanyRepository _dbComapny;
+        private readonly IRfcFactorRepository _dbRfc;
         private readonly IMapper _mapper;
 
-        public PassportDataController(IPassportRepository dbPassport, IMapper mapper, ICompanyRepository dbComapny)
+        public RfcDataController(IRfcFactorRepository dbRfc, IMapper mapper)
         {
             _response = new();
-            _dbPassport = dbPassport;
+            _dbRfc = dbRfc;
             _mapper = mapper;
-            _dbComapny = dbComapny;
         }
 
-        [HttpGet(Name = "GetAllPassports")]
+
+
+        [HttpGet(Name = "GetAllRfcFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetAllPassports()
+        public async Task<ActionResult<APIResponse>> GetAllRfcFactors()
         {
             try
             {
-                IEnumerable<Passport> passports = await _dbPassport.GetAllAsync();
-                _response.Result = _mapper.Map<IEnumerable<PassportDTO>>(passports);
+                IEnumerable<RfcFactor> factors = await _dbRfc.GetAllAsync();
+                _response.Result = _mapper.Map<IEnumerable<RfcFactorDTO>>(factors);
                 if (_response.Result != null)
                 {
                     _response.StatusCode = HttpStatusCode.OK;
@@ -60,24 +59,24 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [HttpGet("id:int", Name = "GetPassport")]
+        [HttpGet("id:int", Name = "GetRfcFactor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetPassport(int id)
+        public async Task<ActionResult<APIResponse>> GetRfcFactor(int id)
         {
             if (id < 0)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("id cannot be less than 0!");
+                _response.ErrorMessages.Add("Rfc factor id cannot be less than 0!");
                 return BadRequest(_response);
             }
             try
             {
-                Passport passport = await _dbPassport.GetAsync(p => p.id == id);
-                _response.Result = _mapper.Map<PassportDTO>(passport);
+                RfcFactor factor = await _dbRfc.GetAsync(r => r.id == id);
+                _response.Result = _mapper.Map<RfcFactorDTO>(factor);
                 if (_response.Result != null)
                 {
                     _response.StatusCode = HttpStatusCode.OK;
@@ -104,7 +103,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
-        public async Task<ActionResult<APIResponse>> CreatePassport([FromBody] PassportCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreateFactor([FromBody] RfcFactorCreateDTO createDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -121,21 +120,12 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                if(await _dbComapny.GetAsync(c => c.id == createDTO.company_id) != null)
-                {
-                    Passport passport = _mapper.Map<Passport>(createDTO);
+                RfcFactor factor = _mapper.Map<RfcFactor>(createDTO);
 
-                    await _dbPassport.CreateAsync(passport);
-                    _response.Result = _mapper.Map<PassportDTO>(passport);
-                    _response.StatusCode = HttpStatusCode.Created;
-                    return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
-                } else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No company with this id was found!");
-                    return NotFound(_response);
-                }
+                await _dbRfc.CreateAsync(factor);
+                _response.Result = _mapper.Map<RfcFactorDTO>(factor);
+                _response.StatusCode = HttpStatusCode.Created;
+                return CreatedAtRoute("GetRfcFactor", new { id = factor.id }, _response);
 
             }
             catch (DbUpdateException ex)
@@ -145,7 +135,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    _response.ErrorMessages.Add("Rfc factor with this name already exists");
                     return Conflict(_response);
                 }
             }
@@ -159,30 +149,89 @@ namespace EcoMonitor.Controllers
         }
 
 
+        [HttpPost, Route("CreateRfcFactors")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
+        public async Task<ActionResult<MultipleAPIResponse>> CreateRfcFactors([FromBody] List<RfcFactorCreateDTO> createDTOlist)
+        {
+            MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
 
-        [HttpDelete("id:int", Name = "DeletePassport")]
+            if (!ModelState.IsValid)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                foreach (var modelError in ModelState.Values)
+                {
+                    foreach (ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                        multipleResponse.apiResponses.Add(_response);
+                        if (error.ErrorMessage.Contains("The JSON array contains a trailing comma at the end which is not supported in this mode"))
+                        {
+                            return BadRequest(multipleResponse);
+                        }
+                    }
+                }
+            }
+            foreach (var createDTO in createDTOlist)
+            {
+                APIResponse response = new APIResponse();
+                try
+                {
+                    RfcFactor factor = _mapper.Map<RfcFactor>(createDTO);
+
+                    if (await _dbRfc.GetAsync(f => f.factor_Name== createDTO.factor_Name) != null)
+                    {
+                        response.StatusCode = HttpStatusCode.Conflict;
+                        response.IsSuccess = false;
+                        response.ErrorMessages.Add($"Rfc factor with this name already exists");
+                    }
+                    else
+                    {
+                        await _dbRfc.CreateAsync(factor);
+                        response.Result = _mapper.Map<RfcFactorDTO>(factor);
+                        response.StatusCode = HttpStatusCode.Created;
+                    }
+                    multipleResponse.apiResponses.Add(response);
+                }
+                catch (Exception ex)
+                {
+                    response.StatusCode = HttpStatusCode.InternalServerError;
+                    response.IsSuccess = false;
+                    response.ErrorMessages = new List<string>() { ex.ToString() };
+                    multipleResponse.apiResponses.Add(response);
+                }
+            }
+            return StatusCode(207, multipleResponse);
+        }
+
+
+        [HttpDelete("id:int", Name = "DeleteRfcFactor")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<APIResponse>> DeletePassport(int id)
+        public async Task<ActionResult<APIResponse>> DeleteRfcFactor(int id)
         {
             if (id < 0)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Passport id cannot be less than 0!");
+                _response.ErrorMessages.Add("Rfc factor id cannot be less than 0!");
                 return BadRequest(_response);
             }
             try
             {
-                var passport = await _dbPassport.GetAsync(u => u.id == id);
-                if (passport == null)
+                var factor = await _dbRfc.GetAsync(f => f.id == id);
+                if (factor == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                await _dbPassport.RemoveAsync(passport);
+                await _dbRfc.RemoveAsync(factor);
                 return NoContent();
             }
             catch (Exception ex)
@@ -194,11 +243,12 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-        [HttpPut(Name = "UpdatePassport")]
+
+        [HttpPut(Name = "UpdateRfcFactor")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<APIResponse>> UpdatePassport([FromBody] PassportUpdateDTO updateDTO)
+        public async Task<ActionResult<APIResponse>> UpdateRfcFactor([FromBody] RfcFactorUpdateDTO updateDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -215,27 +265,17 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                Passport model = _mapper.Map<Passport>(updateDTO);
+                RfcFactor model = _mapper.Map<RfcFactor>(updateDTO);
 
-                if (await _dbPassport.GetAsync(c => c.id == model.id, false) == null)
+                if (await _dbRfc.GetAsync(f => f.id == model.id, false) == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
 
-                if (await _dbComapny.GetAsync(c => c.id == updateDTO.company_id) != null)
-                {
-                    await _dbPassport.UpdateAsync(model);
-                    return NoContent();
-                }
-                else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No company with this id was found!");
-                    return NotFound(_response);
-                }
+                await _dbRfc.UpdateAsync(model);
+                return NoContent();
 
             }
             catch (DbUpdateException ex)
@@ -245,7 +285,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    _response.ErrorMessages.Add("Rfc factor with this name already exists");
                     return Conflict(_response);
                 }
             }
@@ -257,5 +297,6 @@ namespace EcoMonitor.Controllers
             }
             return StatusCode(500, _response);
         }
+
     }
 }

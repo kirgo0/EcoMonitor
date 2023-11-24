@@ -1,4 +1,5 @@
 using EcoMonitor;
+using EcoMonitor.Calculator;
 using EcoMonitor.Data;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
-    option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQL"));
+    option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
 });
 
 builder.Services.Configure<ApiBehaviorOptions>(opt =>
@@ -21,6 +22,8 @@ builder.Services.Configure<ApiBehaviorOptions>(opt =>
 builder.Services.AddScoped<IEnvFactorRepository,EnvFactorRepository>();
 builder.Services.AddScoped<IPassportRepository, PassportRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IRfcFactorRepository, RfcFactorRepository>();
+builder.Services.AddScoped<CarcinogenicRiskCalculator, CarcinogenicRiskCalculator>();
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 
