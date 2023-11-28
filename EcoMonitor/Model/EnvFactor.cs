@@ -26,9 +26,8 @@ namespace EcoMonitor.Model
 
         public Passport Passport { get; set; }
 
-        //[Required]
         [ForeignKey("RfcFactor")]
-        public int rfc_factor_id { get; set; }
+        public int? rfc_factor_id { get; set; }
 
         public RfcFactor RfcFactor { get; set; }
     }

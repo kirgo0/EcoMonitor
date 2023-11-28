@@ -18,7 +18,7 @@ namespace EcoMonitor.Model.DTO
         [Range(0, double.MaxValue)]
         public double factor_Ch_value { get; set; }
         [Range(0, double.MaxValue)]
-        public int rfc_factor_id { get; set; }
+        public int? rfc_factor_id { get; set; }
 
     }
 }
