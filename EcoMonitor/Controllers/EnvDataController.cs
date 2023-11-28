@@ -2,6 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -360,7 +361,10 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No passport with this id was found!");
+                    if (passport == null)
+                        _response.ErrorMessages.Add($"No passport with this id:{updateDTO.passport_id} was found!");
+                    if (rfc == null)
+                        _response.ErrorMessages.Add($"No rfc factor with this id:{updateDTO.rfc_factor_id} was found!");
                     return NotFound(_response);
                 }
             }

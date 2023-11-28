@@ -24,6 +24,7 @@ builder.Services.AddScoped<IPassportRepository, PassportRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IRfcFactorRepository, RfcFactorRepository>();
 builder.Services.AddScoped<CarcinogenicRiskCalculator, CarcinogenicRiskCalculator>();
+builder.Services.AddScoped<NonCarcinogenicRiskCalculator, NonCarcinogenicRiskCalculator>();
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 

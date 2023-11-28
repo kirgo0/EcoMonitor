@@ -31,7 +31,8 @@ namespace EcoMonitor.Controllers
         [HttpGet(Name = "GetAllRfcFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> GetAllRfcFactors()
         {
             try
@@ -63,7 +64,8 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> GetRfcFactor(int id)
         {
             if (id < 0)
@@ -102,7 +104,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> CreateFactor([FromBody] RfcFactorCreateDTO createDTO)
         {
             if (!ModelState.IsValid)
@@ -154,7 +156,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MultipleAPIResponse>> CreateRfcFactors([FromBody] List<RfcFactorCreateDTO> createDTOlist)
         {
             MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
@@ -213,6 +215,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> DeleteRfcFactor(int id)
         {
             if (id < 0)
@@ -248,6 +251,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> UpdateRfcFactor([FromBody] RfcFactorUpdateDTO updateDTO)
         {
             if (!ModelState.IsValid)

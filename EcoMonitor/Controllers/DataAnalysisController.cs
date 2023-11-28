@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using EcoMonitor.Calculator;
+﻿using EcoMonitor.Calculator;
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
-using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;
@@ -15,24 +13,20 @@ namespace EcoMonitor.Controllers
     {
         protected APIResponse _response;
         private readonly CarcinogenicRiskCalculator _carcinogenicRiskCalculator;
-        private readonly IEnvFactorRepository _dbEnv;
-        private readonly IPassportRepository _dbPassport;
-        private readonly IMapper _mapper;
+        private readonly NonCarcinogenicRiskCalculator _nonCarcinogenicRiskCalculator;
 
-        public DataAnalysisController(CarcinogenicRiskCalculator carcinogenicRiskCalculator, IEnvFactorRepository dbEnv, IMapper mapper, IPassportRepository dbPassport)
+        public DataAnalysisController(CarcinogenicRiskCalculator carcinogenicRiskCalculator, NonCarcinogenicRiskCalculator nonCarcinogenicRiskCalculator)
         {
             _carcinogenicRiskCalculator = carcinogenicRiskCalculator;
             _response = new();
-            _dbEnv = dbEnv;
-            _mapper = mapper;
-            _dbPassport = dbPassport;
+            _nonCarcinogenicRiskCalculator = nonCarcinogenicRiskCalculator;
         }
 
-
-        [HttpPost(Name = "CalculateCarcinogenicRisk")]
+        [Route("CarcinogenicRisk")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]// ------------
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<APIResponse> CalculateCarcinogenicRisk([FromBody] CarcinogenicRiskDTO carsinogenicRiskDTO)
         {
             if (!ModelState.IsValid)
@@ -58,8 +52,7 @@ namespace EcoMonitor.Controllers
                 }
                 else
                 {
-                    _response.StatusCode = HttpStatusCode.NoContent;
-                    return NotFound(_response);
+                    StatusCode(500, _response);
                 }
             }
             catch (Exception ex)
@@ -71,5 +64,47 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
+
+        [Route("NonCarcinogenicRisk")]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<APIResponse> CalculateNonCarcinogenicRisk([FromBody] NonCarcinogenicRiskDTO nonCarsinogenicRiskDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                foreach (var modelError in ModelState.Values)
+                {
+                    foreach (ModelError error in modelError.Errors)
+                    {
+                        _response.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
+                return BadRequest(_response);
+            }
+            try
+            {
+                _response.Result = _nonCarcinogenicRiskCalculator.CalculateRisk(nonCarsinogenicRiskDTO);
+                if (_response.Result != null)
+                {
+                    _response.StatusCode = HttpStatusCode.OK;
+                    return Ok(_response);
+                }
+                else
+                {
+                    return StatusCode(500, _response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
+        }
     }
 }
