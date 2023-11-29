@@ -13,5 +13,8 @@ namespace EcoMonitor.Model.DTO
         [Required]
         [Range(0, double.MaxValue)]
         public double factor_value { get; set; }
+        [Required]
+        [MaxLength(150)]
+        public string? damaged_organs { get; set; }
     }
 }

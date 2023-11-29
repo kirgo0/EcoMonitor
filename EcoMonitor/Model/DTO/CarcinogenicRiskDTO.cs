@@ -23,10 +23,10 @@ namespace EcoMonitor.Model.DTO
         [ExcludeZero(double.MaxValue)]
         public double Vin { get; set; }
         [Required]
-        [ExcludeZero(double.MaxValue)]
+        [ExcludeZero(365)]
         public double EF { get; set; }
         [Required]
-        [ExcludeZero(365)]
+        [ExcludeZero(double.MaxValue)]
         public double ED { get; set; }
         [Required]
         [ExcludeZero(300)]
