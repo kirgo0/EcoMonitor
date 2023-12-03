@@ -2,6 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,6 +14,9 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/CompanyData")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class CompanyDataController : Controller
     {
         protected APIResponse _response;
@@ -26,7 +30,7 @@ namespace EcoMonitor.Controllers
             _mapper = mapper;
         }
 
-
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllCompanies")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -58,6 +62,7 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
+        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetCompany")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

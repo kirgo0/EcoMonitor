@@ -2,6 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/RfcData")]
+    [Authorize(Roles = "Admin")]
     public class RfcDataController : Controller
     {
 
@@ -27,7 +29,7 @@ namespace EcoMonitor.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllRfcFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -60,6 +62,7 @@ namespace EcoMonitor.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetRfcFactor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

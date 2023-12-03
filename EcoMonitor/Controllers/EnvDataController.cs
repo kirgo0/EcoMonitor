@@ -2,6 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,6 +14,7 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/EnvData")]
+    [Authorize(Roles = "Admin")]
     public class EnvDataController : ControllerBase
     {
         protected APIResponse _response;
@@ -31,6 +33,7 @@ namespace EcoMonitor.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllEnvFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -63,7 +66,8 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-
+        
+        [AllowAnonymous]
         [HttpGet("passport_id:int", Name = "GetEnvFactorsByPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -108,7 +112,7 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-
+        [AllowAnonymous]
         [HttpGet("factor_id:int,passport_id:int", Name = "GetEnvFactor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

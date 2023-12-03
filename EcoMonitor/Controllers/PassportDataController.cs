@@ -2,17 +2,20 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using System.Data;
 using System.Net;
 
 namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/PassportData")]
+    [Authorize(Roles = "Admin")]
     public class PassportDataController : Controller
     {
 
@@ -29,6 +32,7 @@ namespace EcoMonitor.Controllers
             _dbComapny = dbComapny;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllPassports")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -61,6 +65,7 @@ namespace EcoMonitor.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
