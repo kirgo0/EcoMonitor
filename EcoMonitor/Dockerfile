@@ -13,7 +13,6 @@ COPY . .
 WORKDIR "/src/EcoMonitor"
 RUN dotnet build "EcoMonitor.csproj" -c Release -o /app/build
 
-
 FROM build AS publish
 RUN dotnet publish "EcoMonitor.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
