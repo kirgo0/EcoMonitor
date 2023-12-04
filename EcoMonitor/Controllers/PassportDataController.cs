@@ -16,6 +16,8 @@ namespace EcoMonitor.Controllers
     [ApiController]
     [Route("api/PassportData")]
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class PassportDataController : Controller
     {
 

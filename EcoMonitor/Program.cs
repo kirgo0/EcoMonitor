@@ -18,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
     option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQL"));
+    //option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQLPublic"));
+    //option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -29,6 +31,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 5;
+    options.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 

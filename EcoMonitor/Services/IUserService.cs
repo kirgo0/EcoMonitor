@@ -21,7 +21,6 @@ namespace EcoMonitor.Services
     public class UserService : IUserService
     {
         private APIResponse _response;
-        private readonly string DEFAULT_USER_ROLE = "User";
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
 
@@ -95,7 +94,14 @@ namespace EcoMonitor.Services
 
         public async Task<APIResponse> LoginUserAsync([FromBody] LoginUserDTO userDto)
         {
-            var user = await _userManager.FindByNameAsync(userDto.UserName);
+            IdentityUser user = null;
+            if(userDto.UserName != null)
+            {
+                user = await _userManager.FindByNameAsync(userDto.UserName);
+            } else if(userDto.Email != null)
+            {
+                user = await _userManager.FindByEmailAsync(userDto.Email);
+            }
 
             if(user == null)
             {
@@ -115,11 +121,18 @@ namespace EcoMonitor.Services
                 return _response;
             }
 
-            var claims = new[]
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
             {
                 new Claim("Email", user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
+
+            foreach(var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
 
@@ -127,7 +140,7 @@ namespace EcoMonitor.Services
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: roles.Contains("Admin") ? DateTime.Now.AddMinutes(60) : DateTime.Now.AddDays(7),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 

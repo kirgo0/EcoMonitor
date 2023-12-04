@@ -23,6 +23,10 @@ namespace EcoMonitor.Controllers
         }
 
         [HttpPost("Register")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> RegisterAsync([FromBody] RegisterUserDTO userDto)
         {
             if(!ModelState.IsValid)
@@ -58,6 +62,9 @@ namespace EcoMonitor.Controllers
 
 
         [HttpPost("Login")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> LoginAsync([FromBody] LoginUserDTO userDto)
         {
             if (!ModelState.IsValid)
