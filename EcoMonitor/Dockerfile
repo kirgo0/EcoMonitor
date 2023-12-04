@@ -7,8 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src/EcoMonitor
-COPY ["EcoMonitor.csproj", "EcoMonitor/"]
-RUN dotnet restore "EcoMonitor/EcoMonitor.csproj"
+COPY ["EcoMonitor.csproj", "EcoMonitor_build/"]
+RUN dotnet restore "EcoMonitor_build/EcoMonitor.csproj"
 COPY . .
 WORKDIR "/src/EcoMonitor"
 RUN dotnet build "EcoMonitor.csproj" -c Release -o /app/build
