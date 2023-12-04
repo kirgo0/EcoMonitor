@@ -6,8 +6,8 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY ["EcoMonitor/EcoMonitor.csproj", "EcoMonitor/"]
+WORKDIR /src/EcoMonitor
+COPY ["EcoMonitor.csproj", "EcoMonitor/"]
 RUN dotnet restore "EcoMonitor/EcoMonitor.csproj"
 COPY . .
 WORKDIR "/src/EcoMonitor"
