@@ -13,9 +13,6 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/RfcData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class RfcDataController : Controller
     {
 
@@ -31,7 +28,6 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpGet(Name = "GetAllRfcFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

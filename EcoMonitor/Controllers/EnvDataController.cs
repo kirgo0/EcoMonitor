@@ -14,9 +14,6 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/EnvData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class EnvDataController : ControllerBase
     {
         protected APIResponse _response;

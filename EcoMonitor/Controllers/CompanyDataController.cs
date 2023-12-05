@@ -14,9 +14,6 @@ namespace EcoMonitor.Controllers
 {
     [ApiController]
     [Route("api/CompanyData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class CompanyDataController : Controller
     {
         protected APIResponse _response;
