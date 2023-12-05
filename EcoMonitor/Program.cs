@@ -40,25 +40,27 @@ builder.Services.Configure<ApiBehaviorOptions>(opt =>
     opt.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddAuthentication(auth =>
-    {
-        auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    }
-).AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["AuthSettings:Audience"],
-            ValidIssuer = builder.Configuration["AuthSettings:Issuer"],
-            RequireExpirationTime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthSettings:Key"])),
-            ValidateIssuerSigningKey = true
-        };
-    }
-);
+//[AUTH CODE BLOCK]
+
+//builder.Services.AddAuthentication(auth =>
+//    {
+//        auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//        auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    }
+//).AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidAudience = builder.Configuration["AuthSettings:Audience"],
+//            ValidIssuer = builder.Configuration["AuthSettings:Issuer"],
+//            RequireExpirationTime = true,
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthSettings:Key"])),
+//            ValidateIssuerSigningKey = true
+//        };
+//    }
+//);
 
 builder.Services.AddScoped<IEnvFactorRepository,EnvFactorRepository>();
 builder.Services.AddScoped<IPassportRepository, PassportRepository>();
@@ -104,17 +106,13 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 app.MapControllers();
 
