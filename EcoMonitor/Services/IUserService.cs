@@ -1,4 +1,5 @@
-﻿using EcoMonitor.Model;
+﻿using AutoMapper;
+using EcoMonitor.Model;
 using EcoMonitor.Model.DTO.UserService;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -22,16 +23,14 @@ namespace EcoMonitor.Services
     {
         private APIResponse _response;
         private UserManager<IdentityUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
 
         private IConfiguration _configuration;
 
-        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _response = new APIResponse();
             _userManager = userManager;
             _configuration = configuration;
-            _roleManager = roleManager;
         }
 
         public async Task<APIResponse> RergisterUserAsync(RegisterUserDTO userDto)
@@ -146,7 +145,16 @@ namespace EcoMonitor.Services
 
             string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            _response.Result = tokenAsString;
+            var userLoginResponse = new LoginResposeDTO()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = roles,
+                Token = tokenAsString
+            };
+
+            _response.Result = userLoginResponse;
             _response.StatusCode = HttpStatusCode.OK;
             return _response;
         }

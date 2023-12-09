@@ -31,7 +31,6 @@ namespace EcoMonitor.Controllers
             _dbComapny = dbComapny;
         }
 
-        [AllowAnonymous]
         [HttpGet(Name = "GetAllPassports")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,8 +62,6 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-
-        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

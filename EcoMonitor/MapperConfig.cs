@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
 using EcoMonitor.Model.DTO;
+using EcoMonitor.Model.DTO.UserService;
 
 namespace EcoMonitor
 {

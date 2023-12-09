@@ -27,7 +27,6 @@ namespace EcoMonitor.Controllers
             _mapper = mapper;
         }
 
-        [AllowAnonymous]
         [HttpGet(Name = "GetAllCompanies")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,7 +58,6 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetCompany")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

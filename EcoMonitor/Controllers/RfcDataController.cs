@@ -60,7 +60,6 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpGet("id:int", Name = "GetRfcFactor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

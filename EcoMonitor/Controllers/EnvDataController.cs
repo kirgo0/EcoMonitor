@@ -32,7 +32,6 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpGet(Name = "GetAllEnvFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -66,7 +65,6 @@ namespace EcoMonitor.Controllers
         }
 
         
-        [AllowAnonymous]
         [HttpGet("passport_id:int", Name = "GetEnvFactorsByPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
