@@ -23,11 +23,11 @@ namespace EcoMonitor.Services
     public class UserService : IUserService
     {
         private APIResponse _response;
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<User> _userManager;
 
         private IConfiguration _configuration;
 
-        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper)
+        public UserService(UserManager<User> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _response = new APIResponse();
             _userManager = userManager;
@@ -46,7 +46,7 @@ namespace EcoMonitor.Services
                 return _response;
             }
 
-            var identityUser = new IdentityUser
+            var identityUser = new User
             {
                 Email = userDto.Email,
                 UserName = userDto.UserName
@@ -94,7 +94,7 @@ namespace EcoMonitor.Services
 
         public async Task<APIResponse> LoginUserAsync([FromBody] LoginUserDTO userDto)
         {
-            IdentityUser user = null;
+            User user = null;
             if(userDto.UserName != null)
             {
                 user = await _userManager.FindByNameAsync(userDto.UserName);

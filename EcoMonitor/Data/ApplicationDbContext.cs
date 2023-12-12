@@ -1,10 +1,11 @@
 ﻿using EcoMonitor.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoMonitor.Data
 {
-    public class ApplicationDbContext : IdentityDbContext { 
+    public class ApplicationDbContext : IdentityDbContext<User> { 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
@@ -13,7 +14,10 @@ namespace EcoMonitor.Data
         public DbSet<Passport> passports { get; set; }
         public DbSet<Company> companies { get; set; }
         public DbSet<RfcFactor> rfc_Factors { get; set; }
-        public DbSet<User> users { get; set; }
+        public DbSet<Region> regions { get; set; }
+        public DbSet<News> news { get; set; }
+
+        //public DbSet<User> users { get; set; }
       
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231202144327_init identity tables")]
-    partial class initidentitytables
+    [Migration("20231212204329_News_init")]
+    partial class News_init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,6 +21,21 @@ namespace EcoMonitor.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("CompanyNews", b =>
+                {
+                    b.Property<int>("companyid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("newsid")
+                        .HasColumnType("int");
+
+                    b.HasKey("companyid", "newsid");
+
+                    b.HasIndex("newsid");
+
+                    b.ToTable("CompanyNews");
+                });
 
             modelBuilder.Entity("EcoMonitor.Model.Company", b =>
                 {
@@ -31,18 +46,20 @@ namespace EcoMonitor.Migrations
                     b.Property<string>("description")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("location")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("name")
                         .IsRequired()
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)");
 
+                    b.Property<int?>("region_id")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
                     b.HasIndex("name")
                         .IsUnique();
+
+                    b.HasIndex("region_id");
 
                     b.ToTable("companies");
                 });
@@ -85,6 +102,34 @@ namespace EcoMonitor.Migrations
                     b.ToTable("env_Factors");
                 });
 
+            modelBuilder.Entity("EcoMonitor.Model.News", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("post_date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("update_date")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("title")
+                        .IsUnique();
+
+                    b.ToTable("news");
+                });
+
             modelBuilder.Entity("EcoMonitor.Model.Passport", b =>
                 {
                     b.Property<int>("id")
@@ -119,6 +164,30 @@ namespace EcoMonitor.Migrations
                     b.ToTable("passports");
                 });
 
+            modelBuilder.Entity("EcoMonitor.Model.Region", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("population")
+                        .HasColumnType("int");
+
+                    b.Property<double>("square")
+                        .HasColumnType("double");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("name")
+                        .IsUnique();
+
+                    b.ToTable("regions");
+                });
+
             modelBuilder.Entity("EcoMonitor.Model.RfcFactor", b =>
                 {
                     b.Property<int>("id")
@@ -146,72 +215,6 @@ namespace EcoMonitor.Migrations
                 });
 
             modelBuilder.Entity("EcoMonitor.Model.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("users");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
@@ -273,6 +276,55 @@ namespace EcoMonitor.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -354,6 +406,60 @@ namespace EcoMonitor.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("NewsRegion", b =>
+                {
+                    b.Property<int>("newsid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("regionsid")
+                        .HasColumnType("int");
+
+                    b.HasKey("newsid", "regionsid");
+
+                    b.HasIndex("regionsid");
+
+                    b.ToTable("NewsRegion");
+                });
+
+            modelBuilder.Entity("NewsUser", b =>
+                {
+                    b.Property<string>("authorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("newsid")
+                        .HasColumnType("int");
+
+                    b.HasKey("authorId", "newsid");
+
+                    b.HasIndex("newsid");
+
+                    b.ToTable("NewsUser");
+                });
+
+            modelBuilder.Entity("CompanyNews", b =>
+                {
+                    b.HasOne("EcoMonitor.Model.Company", null)
+                        .WithMany()
+                        .HasForeignKey("companyid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EcoMonitor.Model.News", null)
+                        .WithMany()
+                        .HasForeignKey("newsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EcoMonitor.Model.Company", b =>
+                {
+                    b.HasOne("EcoMonitor.Model.Region", "Region")
+                        .WithMany()
+                        .HasForeignKey("region_id");
+
+                    b.Navigation("Region");
+                });
+
             modelBuilder.Entity("EcoMonitor.Model.EnvFactor", b =>
                 {
                     b.HasOne("EcoMonitor.Model.Passport", "Passport")
@@ -393,7 +499,7 @@ namespace EcoMonitor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.User", null)
+                    b.HasOne("EcoMonitor.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -402,7 +508,7 @@ namespace EcoMonitor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.User", null)
+                    b.HasOne("EcoMonitor.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -417,7 +523,7 @@ namespace EcoMonitor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.User", null)
+                    b.HasOne("EcoMonitor.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,9 +532,39 @@ namespace EcoMonitor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.User", null)
+                    b.HasOne("EcoMonitor.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewsRegion", b =>
+                {
+                    b.HasOne("EcoMonitor.Model.News", null)
+                        .WithMany()
+                        .HasForeignKey("newsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EcoMonitor.Model.Region", null)
+                        .WithMany()
+                        .HasForeignKey("regionsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewsUser", b =>
+                {
+                    b.HasOne("EcoMonitor.Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("authorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EcoMonitor.Model.News", null)
+                        .WithMany()
+                        .HasForeignKey("newsid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

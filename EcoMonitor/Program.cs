@@ -15,12 +15,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
-    option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQL"));
+    //option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQL"));
     //option.UseMySQL(builder.Configuration.GetConnectionString("GoogleMySQLPublic"));
-    //option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
+    option.UseMySQL(builder.Configuration.GetConnectionString("MySQL"));
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     //options.Password.RequireDigit = true;
     //options.Password.RequireLowercase = true;

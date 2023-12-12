@@ -19,10 +19,10 @@ namespace EcoMonitor
 
     public class AuthorizeSecureFilter : IAsyncAuthorizationFilter
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly string _role;
 
-        public AuthorizeSecureFilter(UserManager<IdentityUser> userManager, string role)
+        public AuthorizeSecureFilter(UserManager<User> userManager, string role)
         {
             _userManager = userManager;
             _role = role;

@@ -18,10 +18,10 @@ namespace EcoMonitor.Controllers
     public class UserDataController : ControllerBase
     {
         private APIResponse _response;
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
 
-        public UserDataController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserDataController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _response = new APIResponse();
             _userManager = userManager;
@@ -191,7 +191,7 @@ namespace EcoMonitor.Controllers
                 return BadRequest(_response);
             }
 
-            IdentityUser user;
+            User user;
 
             if(!userId.IsNullOrEmpty())
             {

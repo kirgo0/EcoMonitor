@@ -1,9 +1,10 @@
-﻿namespace EcoMonitor.Model
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+
+namespace EcoMonitor.Model
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
+        public virtual List<News> news { get; set; }
     }
 }
