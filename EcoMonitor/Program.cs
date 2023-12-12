@@ -40,28 +40,6 @@ builder.Services.Configure<ApiBehaviorOptions>(opt =>
     opt.SuppressModelStateInvalidFilter = true;
 });
 
-//[AUTH CODE BLOCK]
-
-//builder.Services.AddAuthentication(auth =>
-//    {
-//        auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//        auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    }
-//).AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidAudience = builder.Configuration["AuthSettings:Audience"],
-//            ValidIssuer = builder.Configuration["AuthSettings:Issuer"],
-//            RequireExpirationTime = true,
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthSettings:Key"])),
-//            ValidateIssuerSigningKey = true
-//        };
-//    }
-//);
-
 builder.Services.AddScoped<IEnvFactorRepository,EnvFactorRepository>();
 builder.Services.AddScoped<IPassportRepository, PassportRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
@@ -113,9 +91,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
-//app.UseAuthentication();
-//app.UseAuthorization();
 
 app.MapControllers();
 
