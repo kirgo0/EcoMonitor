@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace EcoMonitor.Model
+namespace EcoMonitor.Model.APIResponses
 {
     public class APIResponse
     {

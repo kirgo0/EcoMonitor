@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
+using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.UserService;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;

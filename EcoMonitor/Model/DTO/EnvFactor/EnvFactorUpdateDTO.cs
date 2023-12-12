@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace EcoMonitor.Model.DTO
+namespace EcoMonitor.Model.DTO.EnvFactor
 {
-    public class EnvFactorCreateDTO
+    public class EnvFactorUpdateDTO
     {
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int id { get; set; }
         [Required]
         [MaxLength(150)]
         public string factor_Name { get; set; }
@@ -12,7 +15,6 @@ namespace EcoMonitor.Model.DTO
         [Range(0, double.MaxValue)]
         public double factor_value { get; set; }
         [Required]
-        [Range(0, int.MaxValue)]
         public int passport_id { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
@@ -21,7 +23,7 @@ namespace EcoMonitor.Model.DTO
         [Range(0, double.MaxValue)]
         public double factor_Ch_value { get; set; }
         [Required]
-        [Range(0, int.MaxValue)]
         public int rfc_factor_id { get; set; }
+
     }
 }

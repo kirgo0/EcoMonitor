@@ -1,4 +1,6 @@
-﻿namespace EcoMonitor.Model.DTO.UserService
+﻿using EcoMonitor.Model.DTO.UserServiceDTO;
+
+namespace EcoMonitor.Model.DTO.UserService
 {
     public class LoginResposeDTO : UserDTO
     {

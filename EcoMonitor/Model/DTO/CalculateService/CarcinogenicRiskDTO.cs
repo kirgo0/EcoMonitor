@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EcoMonitor.Model.DTO
+namespace EcoMonitor.Model.DTO.CalculateServiceDTO
 {
     public class CarcinogenicRiskDTO
     {

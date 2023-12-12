@@ -1,13 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EcoMonitor.Model.DTO
+namespace EcoMonitor.Model.DTO.Passport
 {
-    public class PassportUpdateDTO
+    public class PassportCreateDTO
     {
-
-        [Required]
-        public int id { get; set; }
-
         [Required]
         [Range(2000, 2030)]
         public int year { get; set; }

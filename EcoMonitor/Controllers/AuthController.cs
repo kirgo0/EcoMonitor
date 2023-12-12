@@ -1,4 +1,4 @@
-﻿using EcoMonitor.Model;
+﻿using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.UserService;
 using EcoMonitor.Services;
 using Microsoft.AspNetCore.Http;

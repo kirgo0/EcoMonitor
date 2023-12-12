@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
-using EcoMonitor.Model.DTO;
+using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO.RfcFactor;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

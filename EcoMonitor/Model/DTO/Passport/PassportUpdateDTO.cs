@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace EcoMonitor.Model.DTO
+namespace EcoMonitor.Model.DTO.Passport
 {
-    public class PassportDTO
+    public class PassportUpdateDTO
     {
 
         [Required]
         public int id { get; set; }
 
         [Required]
+        [Range(2000, 2030)]
         public int year { get; set; }
         public string data2 { get; set; }
         public string data3 { get; set; }

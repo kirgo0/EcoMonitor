@@ -1,5 +1,6 @@
 ﻿using EcoMonitor.Model;
-using EcoMonitor.Model.DTO;
+using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO.UserServiceDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

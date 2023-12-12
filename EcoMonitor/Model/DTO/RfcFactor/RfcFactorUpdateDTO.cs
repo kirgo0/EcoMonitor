@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EcoMonitor.Model.DTO
+namespace EcoMonitor.Model.DTO.RfcFactor
 {
-    public class RfcFactorDTO
+    public class RfcFactorUpdateDTO
     {
         [Required]
         [Range(0, int.MaxValue)]
@@ -13,8 +13,6 @@ namespace EcoMonitor.Model.DTO
         [Required]
         [Range(0, double.MaxValue)]
         public double factor_value { get; set; }
-        [Required]
-        [MaxLength(150)]
-        public string? damaged_organs { get; set; }
+        public string damaged_organs { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿using EcoMonitor.Calculator;
-using EcoMonitor.Model;
-using EcoMonitor.Model.DTO;
+﻿using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO.CalculateServiceDTO;
+using EcoMonitor.Services.Calculator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;

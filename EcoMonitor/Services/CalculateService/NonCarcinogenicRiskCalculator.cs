@@ -1,6 +1,6 @@
-﻿using EcoMonitor.Model.DTO;
+﻿using EcoMonitor.Model.DTO.CalculateServiceDTO;
 
-namespace EcoMonitor.Calculator
+namespace EcoMonitor.Services.Calculator
 {
     public class NonCarcinogenicRiskCalculator
     {
