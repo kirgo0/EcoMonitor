@@ -11,12 +11,5 @@ namespace EcoMonitor.Repository
         {
         }
 
-        public async Task<Company> UpdateAsync(Company entity)
-        {
-            //entity.UpdatedDate = DateTime.Now;
-            dbSet.Update(entity);
-            await SaveAsync();
-            return entity;
-        }
     }
 }

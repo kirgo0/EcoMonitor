@@ -1,4 +1,5 @@
 ﻿using EcoMonitor.Data;
+using EcoMonitor.Model;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -65,6 +66,13 @@ namespace EcoMonitor.Repository
             }
 
             return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<T> UpdateAsync(T entity)
+        {
+            dbSet.Update(entity);
+            await SaveAsync();
+            return entity;
         }
 
         public async Task RemoveAsync(T entity)

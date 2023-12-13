@@ -9,12 +9,6 @@ namespace EcoMonitor.Repository
         public RfcFactorRepository(ApplicationDbContext db) : base(db)
         {
         }
-
-        public async Task<RfcFactor> UpdateAsync(RfcFactor entity)
-        {
-            dbSet.Update(entity);
-            await SaveAsync();
-            return entity;
-        }
+        
     }
 }

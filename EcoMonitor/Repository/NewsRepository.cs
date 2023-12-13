@@ -4,11 +4,10 @@ using EcoMonitor.Repository.IRepository;
 
 namespace EcoMonitor.Repository
 {
-    public class PassportRepository : Repository<Passport>, IPassportRepository
+    public class NewsRepository : Repository<News>, INewsRepository
     {
-        public PassportRepository(ApplicationDbContext db) : base(db)
+        public NewsRepository(ApplicationDbContext db) : base(db)
         {
         }
-
     }
 }
