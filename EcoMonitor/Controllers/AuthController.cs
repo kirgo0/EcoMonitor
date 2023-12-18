@@ -1,16 +1,19 @@
 ﻿using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.UserService;
 using EcoMonitor.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Security.Claims;
 
 namespace EcoMonitor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class AuthController : ControllerBase
     {
         protected APIResponse _response;
@@ -26,7 +29,6 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> RegisterAsync([FromBody] RegisterUserDTO userDto)
         {
             if(!ModelState.IsValid)
@@ -64,7 +66,6 @@ namespace EcoMonitor.Controllers
         [HttpPost("Login")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> LoginAsync([FromBody] LoginUserDTO userDto)
         {
             if (!ModelState.IsValid)
@@ -97,6 +98,28 @@ namespace EcoMonitor.Controllers
                 case HttpStatusCode.BadRequest: return BadRequest(result);
                 default : return StatusCode(500);
             }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<APIResponse>> GetTokenUserData()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var result = await _userService.GetUserData(userId);
+
+            if(result == null)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(_response); 
+            }
+
+            _response.StatusCode=HttpStatusCode.OK;
+            _response.Result = result;
+            return Ok(_response);
         }
     }
 }

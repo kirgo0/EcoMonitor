@@ -2,31 +2,29 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.City;
-using EcoMonitor.Model.DTO.Company;
+using EcoMonitor.Model.DTO.Passport;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using System.Data;
 using System.Net;
 
 namespace EcoMonitor.Controllers
 {
     [ApiController]
-    [Route("api/CompanyData")]
+    [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class CompanyDataController : BasicCRUDController<ICompanyRepository, Company, CompanyDTO, CompanyCreateDTO, CompanyUpdateDTO>
+    public class CityDataController : BasicCRUDController<ICityRepository, City, CityDTO, CityCreateDTO, CityUpdateDTO>
     {
-        private readonly ICityRepository _repositoryCity;
-        public CompanyDataController(ICompanyRepository repository, IMapper mapper, ICityRepository repositoryCity) : base(repository, mapper)
+        private readonly IRegionRepository _repositoryRegion;
+        public CityDataController(ICityRepository repository, IMapper mapper) : base(repository, mapper)
         {
-            _repositoryCity = repositoryCity;
         }
-
 
         [AllowAnonymous]
         public override Task<ActionResult<APIResponse>> GetAll()
@@ -46,7 +44,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public override async Task<ActionResult<APIResponse>> Create([FromBody] CompanyCreateDTO createDTO)
+        public override async Task<ActionResult<APIResponse>> Create([FromBody] CityCreateDTO createDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -63,12 +61,12 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                if (await _repositoryCity.GetAsync(r => r.id == createDTO.city_id) != null)
+                if (await _repositoryRegion.GetAsync(r => r.id == createDTO.region_id) != null)
                 {
-                    Company passport = _mapper.Map<Company>(createDTO);
+                    City passport = _mapper.Map<City>(createDTO);
 
                     await _repository.CreateAsync(passport);
-                    _response.Result = _mapper.Map<CompanyDTO>(passport);
+                    _response.Result = _mapper.Map<CityDTO>(passport);
                     _response.StatusCode = HttpStatusCode.Created;
                     return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
                 }
@@ -106,7 +104,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public override async Task<ActionResult<APIResponse>> Update([FromBody] CompanyUpdateDTO updateDTO)
+        public override async Task<ActionResult<APIResponse>> Update([FromBody] CityUpdateDTO updateDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -123,7 +121,7 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                Company model = _mapper.Map<Company>(updateDTO);
+                City model = _mapper.Map<City>(updateDTO);
 
                 if (await _repository.GetAsync(c => c.id == model.id, false) == null)
                 {
@@ -132,7 +130,7 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
 
-                if (await _repositoryCity.GetAsync(r => r.id == updateDTO.city_id) != null)
+                if (await _repositoryRegion.GetAsync(r => r.id == updateDTO.region_id) != null)
                 {
                     await _repository.UpdateAsync(model);
                     return NoContent();
@@ -141,7 +139,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No city with this id was found!");
+                    _response.ErrorMessages.Add("No company with this id was found!");
                     return NotFound(_response);
                 }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -18,6 +19,7 @@ namespace EcoMonitor.Services
         Task<APIResponse> RergisterUserAsync(RegisterUserDTO userDto);
         Task<APIResponse> LoginUserAsync(LoginUserDTO userDto);
 
+        Task<LoginResposeDTO> GetUserData(string userId);
     }
 
     public class UserService : IUserService
@@ -56,33 +58,17 @@ namespace EcoMonitor.Services
 
             if(result.Succeeded)
             {
-                //if(await _roleManager.FindByNameAsync(DEFAULT_USER_ROLE) == null)
-                //{
-                //    var roleResult = await _roleManager.CreateAsync(new IdentityRole(DEFAULT_USER_ROLE));
-                //    if(!roleResult.Succeeded)
-                //    {
-                //        _response.IsSuccess = false;
-                //        _response.StatusCode = HttpStatusCode.InternalServerError;
-                //        return _response;
-                //    } else
-                //    {
-                        var user = await _userManager.FindByNameAsync(userDto.UserName);
-                        if (user != null)
-                        {
-                            //var userToRole = await _userManager.AddToRoleAsync(user, DEFAULT_USER_ROLE);
-                            //if(userToRole.Succeeded)
-                            //{
-                                _response.IsSuccess = true;
-                                _response.StatusCode = HttpStatusCode.Created;
-                            } else
-                            {
-                                _response.IsSuccess = false;
-                                _response.StatusCode = HttpStatusCode.InternalServerError;
-                            }
-                            return _response;
-                        //}
-                //    }
-                //}
+                var user = await _userManager.FindByNameAsync(userDto.UserName);
+                if (user != null)
+                {
+                    _response.IsSuccess = true;
+                    _response.StatusCode = HttpStatusCode.Created;
+                } else
+                {
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.InternalServerError;
+                }
+                return _response;
             } else
             {
                 _response.IsSuccess = false;
@@ -136,11 +122,13 @@ namespace EcoMonitor.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
 
+            var expiresDate = roles.Contains("Admin") ? DateTime.Now.AddMinutes(60) : DateTime.Now.AddDays(7);
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
                 claims: claims,
-                expires: roles.Contains("Admin") ? DateTime.Now.AddMinutes(60) : DateTime.Now.AddDays(7),
+                expires: expiresDate,
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
@@ -152,12 +140,34 @@ namespace EcoMonitor.Services
                 UserName = user.UserName,
                 Email = user.Email,
                 Role = roles,
-                Token = tokenAsString
+                Token = tokenAsString,
+                Expires = expiresDate
             };
 
             _response.Result = userLoginResponse;
             _response.StatusCode = HttpStatusCode.OK;
             return _response;
+        }
+
+        public async Task<LoginResposeDTO> GetUserData(string userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                return null;
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var userLoginResponse = new LoginResposeDTO()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = roles
+            };
+            return userLoginResponse;
         }
     }
 }

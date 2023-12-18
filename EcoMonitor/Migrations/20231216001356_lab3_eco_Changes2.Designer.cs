@@ -3,6 +3,7 @@ using System;
 using EcoMonitor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231216001356_lab3_eco_Changes2")]
+    partial class lab3_eco_Changes2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,12 +80,17 @@ namespace EcoMonitor.Migrations
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)");
 
+                    b.Property<int?>("region_id")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
                     b.HasIndex("city_id");
 
                     b.HasIndex("name")
                         .IsUnique();
+
+                    b.HasIndex("region_id");
 
                     b.ToTable("companies");
                 });
@@ -135,9 +143,6 @@ namespace EcoMonitor.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("likes")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("post_date")
                         .HasColumnType("datetime(6)");
 
@@ -164,6 +169,18 @@ namespace EcoMonitor.Migrations
 
                     b.Property<int>("company_id")
                         .HasColumnType("int");
+
+                    b.Property<string>("data2")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("data3")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("data4")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("data5")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("year")
                         .HasColumnType("YEAR(4)");
@@ -459,21 +476,6 @@ namespace EcoMonitor.Migrations
                     b.ToTable("NewsUser");
                 });
 
-            modelBuilder.Entity("NewsUser1", b =>
-                {
-                    b.Property<string>("followersId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("likedNewsid")
-                        .HasColumnType("int");
-
-                    b.HasKey("followersId", "likedNewsid");
-
-                    b.HasIndex("likedNewsid");
-
-                    b.ToTable("NewsFollowers", (string)null);
-                });
-
             modelBuilder.Entity("CompanyNews", b =>
                 {
                     b.HasOne("EcoMonitor.Model.Company", null)
@@ -506,7 +508,13 @@ namespace EcoMonitor.Migrations
                         .WithMany()
                         .HasForeignKey("city_id");
 
+                    b.HasOne("EcoMonitor.Model.Region", "Region")
+                        .WithMany()
+                        .HasForeignKey("region_id");
+
                     b.Navigation("City");
+
+                    b.Navigation("Region");
                 });
 
             modelBuilder.Entity("EcoMonitor.Model.EnvFactor", b =>
@@ -614,21 +622,6 @@ namespace EcoMonitor.Migrations
                     b.HasOne("EcoMonitor.Model.News", null)
                         .WithMany()
                         .HasForeignKey("newsid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("NewsUser1", b =>
-                {
-                    b.HasOne("EcoMonitor.Model.User", null)
-                        .WithMany()
-                        .HasForeignKey("followersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EcoMonitor.Model.News", null)
-                        .WithMany()
-                        .HasForeignKey("likedNewsid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

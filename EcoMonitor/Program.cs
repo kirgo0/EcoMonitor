@@ -67,6 +67,8 @@ builder.Services.AddScoped<IPassportRepository, PassportRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IRfcFactorRepository, RfcFactorRepository>();
 builder.Services.AddScoped<INewsRepository, NewsRepository>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 
 builder.Services.AddScoped<CarcinogenicRiskCalculator, CarcinogenicRiskCalculator>();
 builder.Services.AddScoped<NonCarcinogenicRiskCalculator, NonCarcinogenicRiskCalculator>();

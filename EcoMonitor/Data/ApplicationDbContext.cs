@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace EcoMonitor.Data
 {
@@ -15,14 +16,25 @@ namespace EcoMonitor.Data
         public DbSet<Company> companies { get; set; }
         public DbSet<RfcFactor> rfc_Factors { get; set; }
         public DbSet<Region> regions { get; set; }
+        public DbSet<City> cities { get; set; }
         public DbSet<News> news { get; set; }
 
         //public DbSet<User> users { get; set; }
-      
+
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    optionsBuilder.UseMySQL("server=?;database=?;uid=?;pwd=?;");
         //}
+        // Methods
+        protected override void OnModelCreating(ModelBuilder model)
+        {
+            // Either
+            model.ApplyConfiguration(new UserConfiguration());
+            // Or
+            model.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            base.OnModelCreating(model);
+        }
     }
 }

@@ -19,93 +19,25 @@ namespace EcoMonitor.Controllers
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class PassportDataController : Controller
+    public class PassportDataController : BasicCRUDController<IPassportRepository, Passport, PassportDTO, PassportCreateDTO, PassportUpdateDTO>
     {
+        private readonly ICompanyRepository _repositoryComapny;
 
-        protected APIResponse _response;
-        private readonly IPassportRepository _dbPassport;
-        private readonly ICompanyRepository _dbComapny;
-        private readonly IMapper _mapper;
-
-        public PassportDataController(IPassportRepository dbPassport, IMapper mapper, ICompanyRepository dbComapny)
+        public PassportDataController(ICompanyRepository repositoryComapny, IPassportRepository repository, IMapper mapper) : base(repository, mapper)
         {
-            _response = new();
-            _dbPassport = dbPassport;
-            _mapper = mapper;
-            _dbComapny = dbComapny;
+            _repositoryComapny = repositoryComapny;
         }
 
         [AllowAnonymous]
-        [HttpGet(Name = "GetAllPassports")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> GetAllPassports()
+        public override Task<ActionResult<APIResponse>> GetAll()
         {
-            try
-            {
-                IEnumerable<Passport> passports = await _dbPassport.GetAllAsync();
-                _response.Result = _mapper.Map<IEnumerable<PassportDTO>>(passports);
-                if (_response.Result != null)
-                {
-                    _response.StatusCode = HttpStatusCode.OK;
-                    return Ok(_response);
-                }
-                else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
+            return base.GetAll();
         }
 
-
         [AllowAnonymous]
-        [HttpGet("id:int", Name = "GetPassport")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> GetPassport(int id)
+        public override Task<ActionResult<APIResponse>> Get(int id)
         {
-            if (id < 0)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("id cannot be less than 0!");
-                return BadRequest(_response);
-            }
-            try
-            {
-                Passport passport = await _dbPassport.GetAsync(p => p.id == id);
-                _response.Result = _mapper.Map<PassportDTO>(passport);
-                if (_response.Result != null)
-                {
-                    _response.StatusCode = HttpStatusCode.OK;
-                    return Ok(_response);
-                }
-                else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
+            return base.Get(id);
         }
 
 
@@ -114,7 +46,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> CreatePassport([FromBody] PassportCreateDTO createDTO)
+        public override async Task<ActionResult<APIResponse>> Create([FromBody] PassportCreateDTO createDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -131,11 +63,11 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                if(await _dbComapny.GetAsync(c => c.id == createDTO.company_id) != null)
+                if(await _repositoryComapny.GetAsync(c => c.id == createDTO.company_id) != null)
                 {
                     Passport passport = _mapper.Map<Passport>(createDTO);
 
-                    await _dbPassport.CreateAsync(passport);
+                    await _repository.CreateAsync(passport);
                     _response.Result = _mapper.Map<PassportDTO>(passport);
                     _response.StatusCode = HttpStatusCode.Created;
                     return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
@@ -168,49 +100,12 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-
-
-        [HttpDelete("id:int", Name = "DeletePassport")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> DeletePassport(int id)
-        {
-            if (id < 0)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Passport id cannot be less than 0!");
-                return BadRequest(_response);
-            }
-            try
-            {
-                var passport = await _dbPassport.GetAsync(u => u.id == id);
-                if (passport == null)
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-                await _dbPassport.RemoveAsync(passport);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
-        }
-
-        [HttpPut(Name = "UpdatePassport")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> UpdatePassport([FromBody] PassportUpdateDTO updateDTO)
+        public override async Task<ActionResult<APIResponse>> Update([FromBody] PassportUpdateDTO updateDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -229,16 +124,16 @@ namespace EcoMonitor.Controllers
             {
                 Passport model = _mapper.Map<Passport>(updateDTO);
 
-                if (await _dbPassport.GetAsync(c => c.id == model.id, false) == null)
+                if (await _repository.GetAsync(c => c.id == model.id, false) == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
 
-                if (await _dbComapny.GetAsync(c => c.id == updateDTO.company_id) != null)
+                if (await _repositoryComapny.GetAsync(c => c.id == updateDTO.company_id) != null)
                 {
-                    await _dbPassport.UpdateAsync(model);
+                    await _repository.UpdateAsync(model);
                     return NoContent();
                 }
                 else

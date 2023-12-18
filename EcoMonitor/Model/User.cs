@@ -6,5 +6,6 @@ namespace EcoMonitor.Model
     public class User : IdentityUser
     {
         public virtual List<News> news { get; set; }
+        public virtual List<News> likedNews { get; set; }
     }
 }

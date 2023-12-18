@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EcoMonitor.Model.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace EcoMonitor.Model
 {
     [Index(nameof(name), IsUnique = true)]
-    public class Region
+    public class Region : IEntityWithId
     {
         [Key]
         public int id { get; set; }

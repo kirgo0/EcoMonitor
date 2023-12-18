@@ -14,7 +14,7 @@ namespace EcoMonitor.Model.DTO.News
         public DateTime post_date { get; set; }
         public DateTime? update_date { get; set; }
         [Required]
-        public int author_id { get; set; }
+        public string author_id { get; set; }
 
         public int? company_id { get; }
 

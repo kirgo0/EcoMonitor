@@ -17,145 +17,23 @@ namespace EcoMonitor.Controllers
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class RfcDataController : Controller
+    public class RfcDataController : BasicCRUDController<IRfcFactorRepository, RfcFactor, RfcFactorDTO, RfcFactorCreateDTO, RfcFactorUpdateDTO>
     {
-
-        protected APIResponse _response;
-        private readonly IRfcFactorRepository _dbRfc;
-        private readonly IMapper _mapper;
-
-        public RfcDataController(IRfcFactorRepository dbRfc, IMapper mapper)
+        public RfcDataController(IRfcFactorRepository repository, IMapper mapper) : base(repository, mapper)
         {
-            _response = new();
-            _dbRfc = dbRfc;
-            _mapper = mapper;
         }
-
 
         [AllowAnonymous]
-        [HttpGet(Name = "GetAllRfcFactors")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> GetAllRfcFactors()
+        public override Task<ActionResult<APIResponse>> GetAll()
         {
-            try
-            {
-                IEnumerable<RfcFactor> factors = await _dbRfc.GetAllAsync();
-                _response.Result = _mapper.Map<IEnumerable<RfcFactorDTO>>(factors);
-                if (_response.Result != null)
-                {
-                    _response.StatusCode = HttpStatusCode.OK;
-                    return Ok(_response);
-                }
-                else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
+            return base.GetAll();
         }
-
 
         [AllowAnonymous]
-        [HttpGet("id:int", Name = "GetRfcFactor")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> GetRfcFactor(int id)
+        public override Task<ActionResult<APIResponse>> Get(int id)
         {
-            if (id < 0)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Rfc factor id cannot be less than 0!");
-                return BadRequest(_response);
-            }
-            try
-            {
-                RfcFactor factor = await _dbRfc.GetAsync(r => r.id == id);
-                _response.Result = _mapper.Map<RfcFactorDTO>(factor);
-                if (_response.Result != null)
-                {
-                    _response.StatusCode = HttpStatusCode.OK;
-                    return Ok(_response);
-                }
-                else
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
+            return base.Get(id);
         }
-
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> CreateFactor([FromBody] RfcFactorCreateDTO createDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                foreach (var modelError in ModelState.Values)
-                {
-                    foreach (ModelError error in modelError.Errors)
-                    {
-                        _response.ErrorMessages.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(_response);
-            }
-            try
-            {
-                RfcFactor factor = _mapper.Map<RfcFactor>(createDTO);
-
-                await _dbRfc.CreateAsync(factor);
-                _response.Result = _mapper.Map<RfcFactorDTO>(factor);
-                _response.StatusCode = HttpStatusCode.Created;
-                return CreatedAtRoute("GetRfcFactor", new { id = factor.id }, _response);
-
-            }
-            catch (DbUpdateException ex)
-            {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Rfc factor with this name already exists");
-                    return Conflict(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
-        }
-
 
         [HttpPost, Route("CreateRfcFactors")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -191,7 +69,7 @@ namespace EcoMonitor.Controllers
                 {
                     RfcFactor factor = _mapper.Map<RfcFactor>(createDTO);
 
-                    if (await _dbRfc.GetAsync(f => f.factor_Name== createDTO.factor_Name) != null)
+                    if (await _repository.GetAsync(f => f.factor_Name== createDTO.factor_Name) != null)
                     {
                         response.StatusCode = HttpStatusCode.Conflict;
                         response.IsSuccess = false;
@@ -199,7 +77,7 @@ namespace EcoMonitor.Controllers
                     }
                     else
                     {
-                        await _dbRfc.CreateAsync(factor);
+                        await _repository.CreateAsync(factor);
                         response.Result = _mapper.Map<RfcFactorDTO>(factor);
                         response.StatusCode = HttpStatusCode.Created;
                     }
@@ -214,98 +92,6 @@ namespace EcoMonitor.Controllers
                 }
             }
             return StatusCode(207, multipleResponse);
-        }
-
-
-        [HttpDelete("id:int", Name = "DeleteRfcFactor")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> DeleteRfcFactor(int id)
-        {
-            if (id < 0)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Rfc factor id cannot be less than 0!");
-                return BadRequest(_response);
-            }
-            try
-            {
-                var factor = await _dbRfc.GetAsync(f => f.id == id);
-                if (factor == null)
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-                await _dbRfc.RemoveAsync(factor);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
-        }
-
-
-        [HttpPut(Name = "UpdateRfcFactor")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponse>> UpdateRfcFactor([FromBody] RfcFactorUpdateDTO updateDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                foreach (var modelError in ModelState.Values)
-                {
-                    foreach (ModelError error in modelError.Errors)
-                    {
-                        _response.ErrorMessages.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(_response);
-            }
-            try
-            {
-                RfcFactor model = _mapper.Map<RfcFactor>(updateDTO);
-
-                if (await _dbRfc.GetAsync(f => f.id == model.id, false) == null)
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-
-                await _dbRfc.UpdateAsync(model);
-                return NoContent();
-
-            }
-            catch (DbUpdateException ex)
-            {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Rfc factor with this name already exists");
-                    return Conflict(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
         }
 
     }

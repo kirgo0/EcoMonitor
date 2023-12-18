@@ -8,6 +8,7 @@ namespace EcoMonitor.Model.DTO.Company
         [MaxLength(45)]
         public string name { get; set; }
         public string description { get; set; }
-        public string location { get; set; }
+        [Required]
+        public int city_id { get; set; }
     }
 }
