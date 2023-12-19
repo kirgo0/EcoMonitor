@@ -4,7 +4,7 @@ namespace EcoMonitor.Services.MicroServices
 {
     public class NonCarcinogenicRiskCalculator
     {
-        public double Calculate(NonCarcinogenicRiskDTO values)
+        public static double Calculate(NonCarcinogenicRiskDTO values)
         {
             return values.C / values.Rfc;
         }

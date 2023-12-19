@@ -9,6 +9,8 @@ namespace EcoMonitor.Services
         List<double> CalculateCarcinogenic(CarcinogenicRiskDTO dto);
         double CalculateNonCarcinogenic(NonCarcinogenicRiskDTO dto);
         List<double> CalculateCompensation(CompensationDTO dto);
+
+        List<double> CalculateTaxes(TaxesDTO dto);
     }
 
     public class CalculateService : ICalculateService
@@ -19,17 +21,22 @@ namespace EcoMonitor.Services
 
         public List<double> CalculateCarcinogenic(CarcinogenicRiskDTO dto)
         {
-            return new CarcinogenicRiskCalculator().Calculate(dto);
+            return CarcinogenicRiskCalculator.Calculate(dto);
         }
 
         public List<double> CalculateCompensation(CompensationDTO dto)
         {
-            return new CompensationCalculator().Calculate(dto);
+            return CompensationCalculator.Calculate(dto);
         }
-
         public double CalculateNonCarcinogenic(NonCarcinogenicRiskDTO dto)
         {
-            return new NonCarcinogenicRiskCalculator().Calculate(dto);
+            return NonCarcinogenicRiskCalculator.Calculate(dto);
+        }
+
+        public List<double> CalculateTaxes(TaxesDTO dto)
+        {
+            return null;
+            //return new TaxSumCalculator().Calculate(dto);
         }
     }
 }

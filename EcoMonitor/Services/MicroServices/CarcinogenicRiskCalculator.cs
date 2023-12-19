@@ -4,7 +4,7 @@ namespace EcoMonitor.Services.MicroServices
 {
     public class CarcinogenicRiskCalculator
     {
-        public List<double> Calculate(CarcinogenicRiskDTO values)
+        public static List<double> Calculate(CarcinogenicRiskDTO values)
         {
             var ladd = (values.Ca * values.Tout * values.Vout +
                 values.Ch * values.Tin * values.Vin) *

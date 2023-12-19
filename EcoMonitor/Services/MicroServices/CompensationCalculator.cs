@@ -5,7 +5,7 @@ namespace EcoMonitor.Services.MicroServices
     public class CompensationCalculator
     {
         private const double Kzi = 1.0;
-        public List<double> Calculate(CompensationDTO values)
+        public static List<double> Calculate(CompensationDTO values)
         {
             var Kf = values.kf;
             var Kt = GetPopulationCoef(values.pop) * Kf;
@@ -22,7 +22,7 @@ namespace EcoMonitor.Services.MicroServices
             return new List<double>() { compensation, values.mass_flow_rate, values.env_factor};
         }   
 
-        private double GetPopulationCoef(double pop)
+        private static double GetPopulationCoef(double pop)
         {
             return pop switch
             {

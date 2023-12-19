@@ -21,7 +21,7 @@ namespace EcoMonitor.Model.DTO.CalculateService
         public double mass_flow_rate { get; set; }
 
         [Required]
-        [Range(1,int.MaxValue)]
+        [Range(1,8760)]
         public int time_hours { get; set; }
 
         [Required]
