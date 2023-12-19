@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231219140933_Taxes_update")]
+    [Migration("20231219174712_Taxes_update")]
     partial class Taxes_update
     {
         /// <inheritdoc />
@@ -279,7 +279,7 @@ namespace EcoMonitor.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("TaxNorm");
+                    b.ToTable("tax_norms");
                 });
 
             modelBuilder.Entity("EcoMonitor.Model.User", b =>

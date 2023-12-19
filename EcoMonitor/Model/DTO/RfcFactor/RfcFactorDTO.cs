@@ -27,8 +27,5 @@ namespace EcoMonitor.Model.DTO.RfcFactor
 
         [MaxLength(150)]
         public string damaged_organs { get; set; }
-
-        [Range(0, int.MaxValue)]
-        public int tax_norm_id { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace EcoMonitor.Data
         public DbSet<City> cities { get; set; }
         public DbSet<News> news { get; set; }
 
-        //public DbSet<User> users { get; set; }
+        public DbSet<TaxNorm> tax_norms { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

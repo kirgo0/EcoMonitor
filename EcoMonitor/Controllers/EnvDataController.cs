@@ -18,6 +18,7 @@ namespace EcoMonitor.Controllers
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class EnvDataController : ControllerBase
     {
         protected APIResponse _response;
@@ -40,7 +41,6 @@ namespace EcoMonitor.Controllers
         [HttpGet(Name = "GetAllEnvFactors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
         public async Task<ActionResult<APIResponse>> GetAllEnvFactors()
         {
@@ -71,10 +71,10 @@ namespace EcoMonitor.Controllers
 
         
         [AllowAnonymous]
-        [HttpGet("passport_id:int", Name = "GetEnvFactorsByPassport")]
+        [HttpGet]
+        [Route("GetEnvFactorsByPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
         public async Task<ActionResult<APIResponse>> GetEnvFactorsByPassport(int passport_id)
         {
@@ -116,14 +116,14 @@ namespace EcoMonitor.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("factor_id:int,passport_id:int", Name = "GetEnvFactor")]
+        [HttpGet]
+        [Route("GetEnvFactor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetEnvFactor(int passport_id, int factor_id)
+        public async Task<ActionResult<APIResponse>> GetEnvFactor(int id)
         {
-            if (passport_id < 0 || factor_id < 0)
+            if (id < 0)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
@@ -132,7 +132,7 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                EnvFactor factors = await _dbEnv.GetAsync(ef => ef.passport_id == passport_id && ef.id == factor_id);
+                EnvFactor factors = await _dbEnv.GetAsync(ef => ef.id == id);
                 _response.Result = _mapper.Map<EnvFactorDTO>(factors);
                 if (_response.Result != null)
                 {
@@ -158,7 +158,6 @@ namespace EcoMonitor.Controllers
         [HttpPost, Route("CreateEnvFactor")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
         public async Task<ActionResult<APIResponse>> CreateEnvFactor([FromBody] EnvFactorCreateDTO createDTO)
         {
@@ -225,7 +224,6 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
         public async Task<ActionResult<MultipleAPIResponse>> CreateEnvFactors([FromBody] List<EnvFactorCreateDTO> createDTOlist)
         {
@@ -294,7 +292,6 @@ namespace EcoMonitor.Controllers
         }
 
         [HttpDelete("id:int", Name = "DeleteEnvFactor")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponse>> DeleteEnvFactor(int id)
@@ -328,7 +325,6 @@ namespace EcoMonitor.Controllers
         }
 
         [HttpPut(Name = "UpdateEnvFactor")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<APIResponse>> UpdateEnvFactor([FromBody] EnvFactorUpdateDTO updateDTO)

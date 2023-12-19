@@ -1,8 +1,12 @@
-﻿using EcoMonitor.Model.Interfaces;
+﻿using EcoMonitor.Migrations;
+using EcoMonitor.Model.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoMonitor.Model
 {
+    [Index(nameof(year), nameof(factor_Name), IsUnique = true)]
     public class TaxNorm : IEntityWithId
     {
         [Key]
@@ -25,5 +29,13 @@ namespace EcoMonitor.Model
         [Required]
         [Range(0, double.MaxValue)]
         public double temporary_disposal_of_radioactive_wastes { get; set; }
+
+        [ForeignKey("RfcFactor")]
+        public int? rfc_factor_id { get; set; }
+
+        public RfcFactor RfcFactor { get; set; }
+
+        [Column(TypeName = "YEAR(4)")]
+        public int? year { get; set; }
     }
 }

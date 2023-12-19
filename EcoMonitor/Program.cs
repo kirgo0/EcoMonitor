@@ -4,6 +4,7 @@ using EcoMonitor.Model;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using EcoMonitor.Services;
+using EcoMonitor.Services.MicroServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -72,6 +73,7 @@ builder.Services.AddScoped<ITaxNormRepository, TaxNormRepository>();
 
 
 builder.Services.AddScoped<ICalculateService, CalculateService>();
+builder.Services.AddScoped<TaxSumCalculator, TaxSumCalculator>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<IUserService, UserService>();

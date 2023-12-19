@@ -32,7 +32,7 @@ namespace EcoMonitor.Migrations
                 defaultValue: false);
 
             migrationBuilder.CreateTable(
-                name: "TaxNorm",
+                name: "tax_norms",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -46,7 +46,7 @@ namespace EcoMonitor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaxNorm", x => x.id);
+                    table.PrimaryKey("PK_tax_norms", x => x.id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -56,10 +56,10 @@ namespace EcoMonitor.Migrations
                 column: "tax_norm_id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_rfc_Factors_TaxNorm_tax_norm_id",
+                name: "FK_rfc_Factors_tax_norms_tax_norm_id",
                 table: "rfc_Factors",
                 column: "tax_norm_id",
-                principalTable: "TaxNorm",
+                principalTable: "tax_norms",
                 principalColumn: "id");
         }
 
@@ -67,11 +67,11 @@ namespace EcoMonitor.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_rfc_Factors_TaxNorm_tax_norm_id",
+                name: "FK_rfc_Factors_tax_norms_tax_norm_id",
                 table: "rfc_Factors");
 
             migrationBuilder.DropTable(
-                name: "TaxNorm");
+                name: "tax_norms");
 
             migrationBuilder.DropIndex(
                 name: "IX_rfc_Factors_tax_norm_id",

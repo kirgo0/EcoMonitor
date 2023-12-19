@@ -7,6 +7,7 @@ namespace EcoMonitor.Model.DTO.Passport
         [Required]
         [Range(2000, 2030)]
         public int year { get; set; }
+        [Required]
         public double source_operating_time { get; set; }
 
         [Required]
