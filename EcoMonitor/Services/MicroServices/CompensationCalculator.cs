@@ -14,7 +14,7 @@ namespace EcoMonitor.Services.MicroServices
             var convertedPollution = values.env_factor * 1_000_000 / 31_536_088;
             var convertedMass = values.mass_flow_rate * 1_000_000 / 31_536_088;
 
-            if (convertedPollution - convertedMass <= 0) return new List<double>() { 0 };
+            if (convertedPollution - convertedMass <= 0) return new List<double>() { 0, values.mass_flow_rate, values.env_factor };
             var Mi = 3.6 * Math.Pow(10, -3) * (convertedPollution - convertedMass) * values.time_hours;
 
             var compensation = Mi * 1.1 * values.min_salary * A * Kt * Kzi;

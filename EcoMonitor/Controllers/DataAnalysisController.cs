@@ -15,10 +15,10 @@ namespace EcoMonitor.Controllers
         protected APIResponse _response;
         private readonly ICalculateService calculateService;
 
-        public DataAnalysisController()
+        public DataAnalysisController(ICalculateService calculateService)
         {
             _response = new();
-
+            this.calculateService = calculateService;
         }
 
         [Route("CarcinogenicRisk")]
