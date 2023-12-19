@@ -16,6 +16,8 @@ namespace EcoMonitor.Model
         [Required]
         public int population { get; set; }
         [Required]
+        public bool isResort { get; set; }
+        [Required]
         [ForeignKey("Region")]
         public int region_id { get; set; }
         public Region Region { get; set; }

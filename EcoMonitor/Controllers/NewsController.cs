@@ -21,7 +21,7 @@ namespace EcoMonitor.Controllers
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class NewsController : BasicCRUDController<INewsRepository, News, NewsDTO, NewsCreateDTO, NewsUpdateDTO>
     {
-        public NewsController(INewsRepository repository, IMapper mapper) : base(repository, mapper)
+        public NewsController(INewsRepository repository) : base(repository)
         {
         }
 

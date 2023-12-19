@@ -17,6 +17,10 @@ namespace EcoMonitor.Model
         public int year { get; set; }
 
         [Required]
+        [Range(0, 8760)]
+        public double source_operating_time { get; set; }
+
+        [Required]
         [ForeignKey("Company")]
         public int company_id { get; set; }
         public Company Company { get; set; }

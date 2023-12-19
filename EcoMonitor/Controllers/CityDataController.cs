@@ -2,7 +2,6 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.City;
-using EcoMonitor.Model.DTO.Passport;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +21,9 @@ namespace EcoMonitor.Controllers
     public class CityDataController : BasicCRUDController<ICityRepository, City, CityDTO, CityCreateDTO, CityUpdateDTO>
     {
         private readonly IRegionRepository _repositoryRegion;
-        public CityDataController(ICityRepository repository, IMapper mapper) : base(repository, mapper)
+        public CityDataController(ICityRepository repository, IRegionRepository repositoryRegion) : base(repository)
         {
+            _repositoryRegion = repositoryRegion;
         }
 
         [AllowAnonymous]
@@ -63,12 +63,12 @@ namespace EcoMonitor.Controllers
             {
                 if (await _repositoryRegion.GetAsync(r => r.id == createDTO.region_id) != null)
                 {
-                    City passport = _mapper.Map<City>(createDTO);
+                    City city = _mapper.Map<City>(createDTO);
 
-                    await _repository.CreateAsync(passport);
-                    _response.Result = _mapper.Map<CityDTO>(passport);
+                    await _repository.CreateAsync(city);
+                    _response.Result = _mapper.Map<CityDTO>(city);
                     _response.StatusCode = HttpStatusCode.Created;
-                    return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
+                    return CreatedAtAction("Get", new { id = city.id}, _response);
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    _response.ErrorMessages.Add("city with this year already exists");
                     return Conflict(_response);
                 }
             }
@@ -151,7 +151,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Passport with this year already exists");
+                    _response.ErrorMessages.Add("city with this year already exists");
                     return Conflict(_response);
                 }
             }

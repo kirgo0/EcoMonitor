@@ -9,6 +9,8 @@ namespace EcoMonitor.Model.DTO.City
         [Required]
         public int population { get; set; }
         [Required]
+        public bool isResort { get; set; }
+        [Required]
         public int region_id { get; set; }
     }
 }

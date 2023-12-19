@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.Company;
+using EcoMonitor.Model.DTO.EnvFactor;
 using EcoMonitor.Model.Interfaces;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +20,17 @@ namespace EcoMonitor.Controllers
         protected readonly T _repository;
         protected readonly IMapper _mapper;
 
-        public BasicCRUDController(T repository, IMapper mapper)
+        public BasicCRUDController(T repository)
         {
             _response = new();
             _repository = repository;
-            _mapper = mapper;
+            _mapper = new MapperConfiguration(options =>
+            {
+                options.CreateMap<U, UDTO>().ReverseMap();
+                options.CreateMap<U, UCreateDTO>().ReverseMap();
+                options.CreateMap<U, UUpdateDTO>().ReverseMap();
+            }
+            ).CreateMapper();
         }
 
         [HttpGet]
@@ -74,8 +82,8 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                U company = await _repository.GetAsync(c => c.id == id);
-                _response.Result = _mapper.Map<UDTO>(company);
+                U model = await _repository.GetAsync(c => c.id == id);
+                _response.Result = _mapper.Map<UDTO>(model);
                 if (_response.Result != null)
                 {
                     _response.StatusCode = HttpStatusCode.OK;
@@ -119,13 +127,13 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                U company = _mapper.Map<U>(createDTO);
+                U model = _mapper.Map<U>(createDTO);
 
-                await _repository.CreateAsync(company);
-                _response.Result = _mapper.Map<UDTO>(company);
+                await _repository.CreateAsync(model);
+                _response.Result = _mapper.Map<UDTO>(model);
                 _response.StatusCode = HttpStatusCode.Created;
 
-                return CreatedAtRoute("Get", new { id = company.id }, _response);
+                return CreatedAtAction("Get", new { id = model.id }, _response);
             }
             catch (DbUpdateException ex)
             {
@@ -159,19 +167,19 @@ namespace EcoMonitor.Controllers
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Factor id cannot be less than 0!");
+                _response.ErrorMessages.Add($"{typeof(U)} id cannot be less than 0!");
                 return BadRequest(_response);
             }
             try
             {
-                var company = await _repository.GetAsync(u => u.id == id);
-                if (company == null)
+                var model = await _repository.GetAsync(u => u.id == id);
+                if (model == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                await _repository.RemoveAsync(company);
+                await _repository.RemoveAsync(model);
                 return NoContent();
             }
             catch (Exception ex)
@@ -226,7 +234,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Company with this name already exists");
+                    _response.ErrorMessages.Add($"{typeof(U)} with this name already exists");
                     return Conflict(_response);
                 }
             }

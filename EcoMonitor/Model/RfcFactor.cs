@@ -30,5 +30,10 @@ namespace EcoMonitor.Model
 
         [MaxLength(150)]
         public string? damaged_organs { get; set; }
+
+        [ForeignKey("TaxNorm")]
+        public int? tax_norm_id { get; set; }
+
+        public TaxNorm TaxNorm { get; set; }
     }
 }

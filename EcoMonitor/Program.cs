@@ -4,7 +4,6 @@ using EcoMonitor.Model;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using EcoMonitor.Services;
-using EcoMonitor.Services.Calculator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -69,9 +68,11 @@ builder.Services.AddScoped<IRfcFactorRepository, RfcFactorRepository>();
 builder.Services.AddScoped<INewsRepository, NewsRepository>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddScoped<ITaxNormRepository, TaxNormRepository>();
 
-builder.Services.AddScoped<CarcinogenicRiskCalculator, CarcinogenicRiskCalculator>();
-builder.Services.AddScoped<NonCarcinogenicRiskCalculator, NonCarcinogenicRiskCalculator>();
+
+builder.Services.AddScoped<ICalculateService, CalculateService>();
+
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<IUserService, UserService>();
 

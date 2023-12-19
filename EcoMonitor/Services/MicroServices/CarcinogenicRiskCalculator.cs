@@ -1,15 +1,18 @@
 ﻿using EcoMonitor.Model.DTO.CalculateServiceDTO;
 
-namespace EcoMonitor.Services.Calculator
+namespace EcoMonitor.Services.MicroServices
 {
     public class CarcinogenicRiskCalculator
     {
-        public double CalculateRisk(CarcinogenicRiskDTO values)
+        public List<double> Calculate(CarcinogenicRiskDTO values)
         {
-            return (values.Ca * values.Tout * values.Vout +
+            var ladd = (values.Ca * values.Tout * values.Vout +
                 values.Ch * values.Tin * values.Vin) *
                 values.EF * values.ED /
                 (values.BW * values.AT * 365);
+
+            var Cr = ladd * values.SF;
+            return new List<double> { Cr, Cr * values.POP};
         }
     }
 }

@@ -22,7 +22,7 @@ namespace EcoMonitor.Controllers
     public class CompanyDataController : BasicCRUDController<ICompanyRepository, Company, CompanyDTO, CompanyCreateDTO, CompanyUpdateDTO>
     {
         private readonly ICityRepository _repositoryCity;
-        public CompanyDataController(ICompanyRepository repository, IMapper mapper, ICityRepository repositoryCity) : base(repository, mapper)
+        public CompanyDataController(ICompanyRepository repository, ICityRepository repositoryCity) : base(repository)
         {
             _repositoryCity = repositoryCity;
         }
@@ -70,7 +70,7 @@ namespace EcoMonitor.Controllers
                     await _repository.CreateAsync(passport);
                     _response.Result = _mapper.Map<CompanyDTO>(passport);
                     _response.StatusCode = HttpStatusCode.Created;
-                    return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
+                    return Ok(_response);
                 }
                 else
                 {

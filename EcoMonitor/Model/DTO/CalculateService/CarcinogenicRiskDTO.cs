@@ -34,6 +34,12 @@ namespace EcoMonitor.Model.DTO.CalculateServiceDTO
         [Required]
         [ExcludeZero(double.MaxValue)]
         public double AT { get; set; }
+        [Required]
+        [ExcludeZero(double.MaxValue)]
+        public double SF { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int POP { get; set; }
 
 
     }

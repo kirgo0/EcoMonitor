@@ -10,7 +10,7 @@ namespace EcoMonitor.Repository
     {
 
         private readonly ApplicationDbContext _db;
-        internal DbSet<T> dbSet;
+        protected DbSet<T> dbSet;
 
         public Repository(ApplicationDbContext db)
         {

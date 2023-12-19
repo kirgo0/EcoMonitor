@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO.EnvFactor;
 using EcoMonitor.Model.DTO.Passport;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,7 @@ namespace EcoMonitor.Controllers
     {
         private readonly ICompanyRepository _repositoryComapny;
 
-        public PassportDataController(ICompanyRepository repositoryComapny, IPassportRepository repository, IMapper mapper) : base(repository, mapper)
+        public PassportDataController(ICompanyRepository repositoryComapny, IPassportRepository repository) : base(repository)
         {
             _repositoryComapny = repositoryComapny;
         }
@@ -38,6 +39,55 @@ namespace EcoMonitor.Controllers
         public override Task<ActionResult<APIResponse>> Get(int id)
         {
             return base.Get(id);
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetPassportsByCompany")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
+        public async Task<ActionResult<APIResponse>> GetPassportsByCompany([FromQuery] int company_id)
+        {
+            if (company_id < 0)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("id cannot be less than 0!");
+                return BadRequest(_response);
+            }
+            try
+            {
+                if (await _repositoryComapny.GetAsync(c => c.id == company_id) == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+                IEnumerable<Passport> passports = await _repository.GetAllAsync(p => p.company_id == company_id);
+                var result = _mapper.Map<IEnumerable<PassportDTO>>(passports);
+                _response.Result = result;
+
+                if (result.Count() != 0)
+                {
+                    _response.StatusCode = HttpStatusCode.OK;
+                    return Ok(_response);
+                }
+                else
+                {
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    return NoContent();
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
         }
 
 
@@ -70,7 +120,7 @@ namespace EcoMonitor.Controllers
                     await _repository.CreateAsync(passport);
                     _response.Result = _mapper.Map<PassportDTO>(passport);
                     _response.StatusCode = HttpStatusCode.Created;
-                    return CreatedAtRoute("GetPassport", new { id = passport.id }, _response);
+                    return Ok(_response);
                 } else
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;

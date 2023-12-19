@@ -19,7 +19,7 @@ namespace EcoMonitor.Controllers
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public class RfcDataController : BasicCRUDController<IRfcFactorRepository, RfcFactor, RfcFactorDTO, RfcFactorCreateDTO, RfcFactorUpdateDTO>
     {
-        public RfcDataController(IRfcFactorRepository repository, IMapper mapper) : base(repository, mapper)
+        public RfcDataController(IRfcFactorRepository repository) : base(repository)
         {
         }
 

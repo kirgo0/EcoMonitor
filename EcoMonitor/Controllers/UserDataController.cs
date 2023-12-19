@@ -2,9 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.UserServiceDTO;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -283,7 +281,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> UpdateUserRoles([FromQuery] string id, [FromBody] List<string> roles)
         {
-            if (roles.IsNullOrEmpty() || id.IsNullOrEmpty())
+            if (roles == null || id.IsNullOrEmpty())
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 return BadRequest(_response);
@@ -297,20 +295,34 @@ namespace EcoMonitor.Controllers
                 return NotFound(_response);
             }
 
-            foreach (var role in roles) {
+            foreach (var role in roles)
+            {
                 if (await _roleManager.FindByNameAsync(role) == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.ErrorMessages.Add($"Role {role} not found!");
                     return BadRequest(_response);
                 }
-            }
+            } 
             
             try
             {
                 var removeResult = await _userManager.RemoveFromRolesAsync(user, await _userManager.GetRolesAsync(user));
                 if (removeResult.Succeeded)
                 {
+                    if (roles.Count == 0)
+                    {
+                        user = await _userManager.FindByIdAsync(user.Id);
+                        _response.Result = new UserDTO()
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Role = await _userManager.GetRolesAsync(user)
+                        };
+                        _response.StatusCode = HttpStatusCode.OK;
+                        return Ok(_response);
+                    }
                     var result = await _userManager.AddToRolesAsync(user, roles);
                     if (result.Succeeded)
                     {
