@@ -18,8 +18,8 @@ namespace EcoMonitor.Data
         public DbSet<Region> regions { get; set; }
         public DbSet<City> cities { get; set; }
         public DbSet<News> news { get; set; }
-
         public DbSet<TaxNorm> tax_norms { get; set; }
+        public DbSet<CompanyWaste> company_wastes { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

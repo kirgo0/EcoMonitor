@@ -15,8 +15,10 @@ namespace EcoMonitor.Services
 
     public class CalculateService : ICalculateService
     {
-        public CalculateService()
+        private TaxSumCalculator _taxSumCalculator;
+        public CalculateService(TaxSumCalculator taxSumCalculator)
         {
+            _taxSumCalculator = taxSumCalculator;
         }
 
         public List<double> CalculateCarcinogenic(CarcinogenicRiskDTO dto)
@@ -35,7 +37,7 @@ namespace EcoMonitor.Services
 
         public List<double> CalculateTaxes(TaxesDTO dto)
         {
-            return null;
+            return _taxSumCalculator.Calculate(dto);
             //return new TaxSumCalculator().Calculate(dto);
         }
     }

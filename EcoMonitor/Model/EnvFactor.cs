@@ -28,7 +28,12 @@ namespace EcoMonitor.Model
 
         [ForeignKey("RfcFactor")]
         public int? rfc_factor_id { get; set; }
-
         public RfcFactor RfcFactor { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public double? radioactive_volume { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public double? radioactive_disposal_time { get; set; }
     }
 }
