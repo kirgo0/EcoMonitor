@@ -18,13 +18,13 @@ namespace EcoMonitor.Controllers
         {
         }
 
-        [HttpPost, Route("CreateRfcFactors")]
+        [HttpPost, Route("CreatePollutants")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MultipleAPIResponse>> CreateRfcFactors([FromBody] List<PollutantCreateDTO> createDTOlist)
+        public async Task<ActionResult<MultipleAPIResponse>> CreatePollutants([FromBody] List<PollutantCreateDTO> createDTOlist)
         {
             MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
 
@@ -56,7 +56,7 @@ namespace EcoMonitor.Controllers
                     {
                         response.StatusCode = HttpStatusCode.Conflict;
                         response.IsSuccess = false;
-                        response.ErrorMessages.Add($"Rfc factor with this name already exists");
+                        response.ErrorMessages.Add($"Pollutant with this name already exists");
                     }
                     else
                     {

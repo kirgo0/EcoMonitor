@@ -15,7 +15,7 @@ namespace EcoMonitor.Model
         public string name { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double pollution_value { get; set; }
+        public double value { get; set; }
         [Range(0, double.MaxValue)]
         public double CA_value { get; set; }
         [Range(0, double.MaxValue)]

@@ -2,6 +2,7 @@
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO.EnvFactor;
+using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,31 +23,31 @@ namespace EcoMonitor.Controllers
     public class PollutionDataController : ControllerBase
     {
         protected APIResponse _response;
-        private readonly IPollutionRepository _dbEnv;
-        private readonly IPollutantRepository _dbRfc;
+        private readonly IPollutionRepository _pollutionsRepository;
+        private readonly IPollutantRepository _pollutantRepository;
         private readonly IPassportRepository _dbPassport;
         private readonly IMapper _mapper;
 
-        public PollutionDataController(IPollutionRepository dbEnv, IMapper mapper, IPassportRepository dbPassport, IPollutantRepository dbRfc)
+        public PollutionDataController(IPollutionRepository pollutionsRepository, IMapper mapper, IPassportRepository dbPassport, IPollutantRepository pollutantRepository)
         {
             _response = new();
-            _dbEnv = dbEnv;
             _mapper = mapper;
             _dbPassport = dbPassport;
-            _dbRfc = dbRfc;
+            _pollutionsRepository = pollutionsRepository;
+            _pollutantRepository = pollutantRepository;
         }
 
 
         [AllowAnonymous]
-        [HttpGet(Name = "GetAllEnvFactors")]
+        [HttpGet(Name = "GetAllPollutions")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetAllEnvFactors()
+        public async Task<ActionResult<APIResponse>> GetAllPollutions()
         {
             try
             {
-                IEnumerable<Pollution> factors = await _dbEnv.GetAllAsync();
+                IEnumerable<Pollution> factors = await _pollutionsRepository.GetAllAsync();
                 var result = _mapper.Map<IEnumerable<PollutionDTO>>(factors);
                 _response.Result = result;
                 if (result.Count() != 0)
@@ -72,11 +73,11 @@ namespace EcoMonitor.Controllers
         
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetEnvFactorsByPassport")]
+        [Route("GetPollutionsByPassport")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetEnvFactorsByPassport(int passport_id)
+        public async Task<ActionResult<APIResponse>> GetPollutionsByPassport(int passport_id)
         {
             if(passport_id < 0)
             {
@@ -93,7 +94,7 @@ namespace EcoMonitor.Controllers
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                IEnumerable<Pollution> factors = await _dbEnv.GetAllAsync(ef => ef.passport_id == passport_id);
+                IEnumerable<Pollution> factors = await _pollutionsRepository.GetAllAsync(ef => ef.passport_id == passport_id);
                 var result = _mapper.Map<IEnumerable<PollutionDTO>>(factors);
                 _response.Result = result;
                 if(result.Count() != 0)
@@ -117,11 +118,11 @@ namespace EcoMonitor.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("GetEnvFactor")]
+        [Route("GetPollution")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] // ------------
-        public async Task<ActionResult<APIResponse>> GetEnvFactor(int id)
+        public async Task<ActionResult<APIResponse>> GetPollution(int id)
         {
             if (id < 0)
             {
@@ -132,7 +133,7 @@ namespace EcoMonitor.Controllers
             }
             try
             {
-                Pollution factors = await _dbEnv.GetAsync(ef => ef.id == id);
+                Pollution factors = await _pollutionsRepository.GetAsync(ef => ef.id == id);
                 _response.Result = _mapper.Map<PollutionDTO>(factors);
                 if (_response.Result != null)
                 {
@@ -155,11 +156,11 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
-        [HttpPost, Route("CreateEnvFactor")]
+        [HttpPost, Route("CreatePollution")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
-        public async Task<ActionResult<APIResponse>> CreateEnvFactor([FromBody] PollutionCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreatePollution([FromBody] PollutionCreateDTO createDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -177,16 +178,16 @@ namespace EcoMonitor.Controllers
             try
             {
                 var passport = await _dbPassport.GetAsync(p => p.id == createDTO.passport_id);
-                var rfc = await _dbRfc.GetAsync(r => r.id == createDTO.pollutant_id);
+                var rfc = await _pollutantRepository.GetAsync(r => r.id == createDTO.pollutant_id);
                 if (passport != null && rfc != null)
                 {
                     Pollution envFactor = _mapper.Map<Pollution>(createDTO);
 
-                    await _dbEnv.CreateAsync(envFactor);
+                    await _pollutionsRepository.CreateAsync(envFactor);
                     _response.Result = _mapper.Map<PollutionDTO>(envFactor);
                     _response.StatusCode = HttpStatusCode.Created;
 
-                    return CreatedAtRoute("GetEnvFactor", new { factor_id = envFactor.id, passport_id = envFactor.passport_id }, _response);
+                    return CreatedAtRoute("GetPollution", new { factor_id = envFactor.id, passport_id = envFactor.passport_id }, _response);
                 } else
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
@@ -194,7 +195,7 @@ namespace EcoMonitor.Controllers
                     if (passport == null)
                         _response.ErrorMessages.Add($"No passport with this id:{createDTO.passport_id} was found!");
                     if (rfc == null)
-                        _response.ErrorMessages.Add($"No rfc factor with this id:{createDTO.pollutant_id} was found!");
+                        _response.ErrorMessages.Add($"No polltuion with this id:{createDTO.pollutant_id} was found!");
                     return NotFound(_response);
                 }
 
@@ -206,7 +207,7 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.Conflict;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Factor with this name already exists");
+                    _response.ErrorMessages.Add("Polltuion with this name already exists");
                     return Conflict(_response);
                 }
             }
@@ -220,12 +221,12 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [HttpPost, Route("CreateEnvFactors")]
+        [HttpPost, Route("CreatePollutionsd")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
-        public async Task<ActionResult<MultipleAPIResponse>> CreateEnvFactors([FromBody] List<PollutionCreateDTO> createDTOlist)
+        public async Task<ActionResult<MultipleAPIResponse>> CreatePollutionsd([FromBody] List<PollutionCreateDTO> createDTOlist)
         {
             MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
 
@@ -252,19 +253,19 @@ namespace EcoMonitor.Controllers
                 try
                 {
                     var passport = await _dbPassport.GetAsync(p => p.id == createDTO.passport_id);
-                    var rfc = await _dbRfc.GetAsync(r => r.id == createDTO.pollutant_id);
+                    var rfc = await _pollutantRepository.GetAsync(r => r.id == createDTO.pollutant_id);
                     if (passport != null && rfc != null)
                     {
                         Pollution envFactor = _mapper.Map<Pollution>(createDTO);
 
-                        if (await _dbEnv.GetAsync(e => e.passport_id == createDTO.passport_id && e.name == createDTO.name) != null)
+                        if (await _pollutionsRepository.GetAsync(e => e.passport_id == createDTO.passport_id && e.name == createDTO.name) != null)
                         {
                             response.StatusCode = HttpStatusCode.Conflict;
                             response.IsSuccess = false;
-                            response.ErrorMessages.Add($"Factor with this name already exists, passport id:{createDTO.passport_id}, factor name:{createDTO.name}");
+                            response.ErrorMessages.Add($"Pollution with this name already exists, passport id:{createDTO.passport_id}, pollution:{createDTO.name}");
                         } else
                         {
-                            await _dbEnv.CreateAsync(envFactor);
+                            await _pollutionsRepository.CreateAsync(envFactor);
                             response.Result = _mapper.Map<PollutionDTO>(envFactor);
                             response.StatusCode = HttpStatusCode.Created;
                         }
@@ -305,14 +306,14 @@ namespace EcoMonitor.Controllers
                     _response.ErrorMessages.Add("Factor id cannot be less than 0!");
                     return BadRequest(_response);
                 }
-                var factor = await _dbEnv.GetAsync(u => u.id == id);
+                var factor = await _pollutionsRepository.GetAsync(u => u.id == id);
                 if (factor == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                await _dbEnv.RemoveAsync(factor);
+                await _pollutionsRepository.RemoveAsync(factor);
                 return NoContent();
             }
             catch (Exception ex)
@@ -346,7 +347,7 @@ namespace EcoMonitor.Controllers
             {
                 Pollution model = _mapper.Map<Pollution>(updateDTO);
 
-                if (await _dbEnv.GetAsync(u => u.id == model.id, false) == null)
+                if (await _pollutionsRepository.GetAsync(u => u.id == model.id, false) == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
@@ -354,10 +355,10 @@ namespace EcoMonitor.Controllers
                 }
 
                 var passport = await _dbPassport.GetAsync(p => p.id == updateDTO.passport_id);
-                var rfc = await _dbRfc.GetAsync(r => r.id == updateDTO.pollutant_id);
+                var rfc = await _pollutantRepository.GetAsync(r => r.id == updateDTO.pollutant_id);
                 if (passport != null && rfc != null)
                 {
-                    await _dbEnv.UpdateAsync(model);
+                    await _pollutionsRepository.UpdateAsync(model);
                     return NoContent();
                 }
                 else

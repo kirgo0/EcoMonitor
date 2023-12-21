@@ -42,7 +42,7 @@ namespace EcoMonitor.Services.MicroServices
             
             for (var i = 0; i < masses.Count; i++)
             {
-                result += masses[i].pollution_value * taxes[i].air_emissions;
+                result += masses[i].value * taxes[i].air_emissions;
             }
 
             return result;
@@ -64,7 +64,7 @@ namespace EcoMonitor.Services.MicroServices
                 var companyWaste = _companyWasteRepository.GetAsync(c => c.passport_id == masses[i].passport_id).Result;
                 var koc = 1.0;
                 if (companyWaste != null && companyWaste.Koc) koc = 1.5;
-                result += masses[i].pollution_value * taxes[i].water_emissions * koc;
+                result += masses[i].value * taxes[i].water_emissions * koc;
             }
 
             return result;
@@ -91,7 +91,7 @@ namespace EcoMonitor.Services.MicroServices
                     ko = 3;
                     kt = companyWaste.Kt;
                 }
-                result += masses[i].pollution_value * taxes[i].disposal_of_wastes * kt * ko;
+                result += masses[i].value * taxes[i].disposal_of_wastes * kt * ko;
             }
 
             return result;
@@ -112,7 +112,7 @@ namespace EcoMonitor.Services.MicroServices
             {
                 var radVol = masses[i].radioactive_volume;
                 if (radVol.HasValue && radVol.Value > 0)
-                    result += masses[i].pollution_value * taxes[i].radioactive_wastes * radVol.Value * GetRadK();
+                    result += masses[i].value * taxes[i].radioactive_wastes * radVol.Value * GetRadK();
             }
 
             return result;
@@ -136,7 +136,7 @@ namespace EcoMonitor.Services.MicroServices
 
                 if(time.HasValue && radVol.HasValue &&
                     time.Value>0 && radVol.Value>0)
-                result += masses[i].pollution_value * 
+                result += masses[i].value * 
                     taxes[i].temporary_disposal_of_radioactive_wastes *
                     time.Value * radVol.Value; 
             }
