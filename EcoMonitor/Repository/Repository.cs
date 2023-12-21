@@ -10,23 +10,23 @@ namespace EcoMonitor.Repository
     {
 
         private readonly ApplicationDbContext _db;
-        protected DbSet<T> dbSet;
+        protected DbSet<T> _dbSet;
 
         public Repository(ApplicationDbContext db)
         {
             _db = db;
-            this.dbSet = _db.Set<T>();
+            this._dbSet = _db.Set<T>();
         }
 
         public async Task CreateAsync(T entity)
         {
-            await dbSet.AddAsync(entity);
+            await _dbSet.AddAsync(entity);
             await SaveAsync();
         }
 
         public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = _dbSet;
 
             if (filter != null)
             {
@@ -45,7 +45,7 @@ namespace EcoMonitor.Repository
 
         public async Task<T> GetAsync(Expression<Func<T, bool>>? filter = null, bool tracked = true, string? includeProperties = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = _dbSet;
 
             if (!tracked)
             {
@@ -70,14 +70,14 @@ namespace EcoMonitor.Repository
 
         public async Task<T> UpdateAsync(T entity)
         {
-            dbSet.Update(entity);
+            _dbSet.Update(entity);
             await SaveAsync();
             return entity;
         }
 
         public async Task RemoveAsync(T entity)
         {
-            dbSet.Remove(entity);
+            _dbSet.Remove(entity);
             await SaveAsync();
         }
 

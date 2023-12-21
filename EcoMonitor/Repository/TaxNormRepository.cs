@@ -14,7 +14,7 @@ namespace EcoMonitor.Repository
 
         public async Task<List<int>> GetDiscinctByYear()
         {
-            IQueryable<TaxNorm> query = dbSet;
+            IQueryable<TaxNorm> query = _dbSet;
             
 
             return await query.Select(t => t.year).Distinct().ToListAsync();

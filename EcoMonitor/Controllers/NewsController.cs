@@ -24,7 +24,9 @@ namespace EcoMonitor.Controllers
 
         public override Task<ActionResult<APIResponse>> GetAll()
         {
-            var a = _formattedNewsRepository.view.ToList();
+            var a = _formattedNewsRepository.view.AsNoTracking().ToList();
+            // geting count of likes (authors)
+            var b = _repository.dbSet.Where(n => n.id == 1).SelectMany(n => n.authors).Count();
             Console.WriteLine();
             return null;
         }

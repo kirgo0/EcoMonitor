@@ -11,6 +11,6 @@ namespace EcoMonitor.Repository
         {
         }
 
-        public DbSet<FormattedNews> view => dbSet;
+        public DbSet<FormattedNews> view => _dbSet;
     }
 }

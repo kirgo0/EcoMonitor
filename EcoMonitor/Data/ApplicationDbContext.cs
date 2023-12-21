@@ -21,18 +21,19 @@ namespace EcoMonitor.Data
         public DbSet<TaxNorm> tax_norms { get; set; }
         public DbSet<CompanyWaste> company_wastes { get; set; }
 
-        //public DbSet<FormattedNews> formatted_news { get; set; }
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseMySQL("server=?;database=?;uid=?;pwd=?;");
-        //}
-        // Methods
+        public DbSet<FormattedNews> formatted_news { get; set; }
+
         protected override void OnModelCreating(ModelBuilder model)
         {
             // Either
             model.ApplyConfiguration(new UserConfiguration());
             // Or
             model.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            // view for news
+
+            model.Entity<FormattedNews>()
+                        .ToView(nameof(formatted_news)).HasKey(n => n.id);
 
             base.OnModelCreating(model);
         }
