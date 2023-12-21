@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
+
+using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -27,7 +28,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     title = table.Column<string>(type: "varchar(255)", nullable: false),
                     description = table.Column<string>(type: "longtext", nullable: false),
                     post_date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -44,7 +45,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     name = table.Column<string>(type: "varchar(255)", nullable: false),
                     population = table.Column<int>(type: "int", nullable: false),
                     square = table.Column<double>(type: "double", nullable: false)

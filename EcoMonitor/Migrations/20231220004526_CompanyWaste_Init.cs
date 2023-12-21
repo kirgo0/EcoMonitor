@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -28,7 +28,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     passport_id = table.Column<int>(type: "int", nullable: false),
                     Koc = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Ko = table.Column<bool>(type: "tinyint(1)", nullable: false),

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -19,7 +19,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     name = table.Column<string>(type: "longtext", nullable: false),
                     description = table.Column<string>(type: "longtext", nullable: false),
                     data1 = table.Column<string>(type: "longtext", nullable: false),
@@ -38,7 +38,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     factor_Name = table.Column<string>(type: "longtext", nullable: false),
                     factor_value = table.Column<double>(type: "double", nullable: false),
                     passport_id = table.Column<int>(type: "int", nullable: false)
@@ -54,7 +54,7 @@ namespace EcoMonitor.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySQL:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     name = table.Column<string>(type: "longtext", nullable: false),
                     data = table.Column<string>(type: "longtext", nullable: false),
                     data2 = table.Column<string>(type: "longtext", nullable: false),
