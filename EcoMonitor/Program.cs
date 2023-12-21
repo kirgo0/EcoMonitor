@@ -17,9 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
+var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
 //var connectionString = builder.Configuration.GetConnectionString("GoogleMySQLPublic");
-var connectionString = builder.Configuration.GetConnectionString("MySQL");
+//var connectionString = builder.Configuration.GetConnectionString("MySQL");
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
     option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
