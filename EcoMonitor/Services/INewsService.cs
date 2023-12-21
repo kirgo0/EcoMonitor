@@ -13,16 +13,20 @@ namespace EcoMonitor.Services
     {
 
         private APIResponse _response;
-        private readonly INewsRepository _dbNews;
+        private readonly INewsRepository _newsRepository;
         private IMapper _mapper;
 
-        public NewsService(APIResponse response, INewsRepository dbNews, IMapper mapper)
+        public NewsService(APIResponse response, INewsRepository newsRepository, IMapper mapper)
         {
             _response = response;
-            _dbNews = dbNews;
+            _newsRepository = newsRepository;
             _mapper = mapper;
         }
 
+        public void GetNewsNamesByRegion()
+        {
+            
+        }
 
     }
 }

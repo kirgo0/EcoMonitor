@@ -73,6 +73,7 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ITaxNormRepository, TaxNormRepository>();
 builder.Services.AddScoped<ICompanyWasteRepository, CompanyWasteRepository>();
+builder.Services.AddScoped<IFormattedNewsRepository, FormatedNewsRepository>();
 
 
 builder.Services.AddScoped<ICalculateService, CalculateService>();

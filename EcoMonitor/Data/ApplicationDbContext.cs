@@ -21,7 +21,7 @@ namespace EcoMonitor.Data
         public DbSet<TaxNorm> tax_norms { get; set; }
         public DbSet<CompanyWaste> company_wastes { get; set; }
 
-
+        public DbSet<FormattedNews> formatted_news { get; set; }
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    optionsBuilder.UseMySQL("server=?;database=?;uid=?;pwd=?;");

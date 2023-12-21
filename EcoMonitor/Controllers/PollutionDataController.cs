@@ -221,12 +221,12 @@ namespace EcoMonitor.Controllers
         }
 
 
-        [HttpPost, Route("CreatePollutionsd")]
+        [HttpPost, Route("CreatePollutions")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] //-------------
-        public async Task<ActionResult<MultipleAPIResponse>> CreatePollutionsd([FromBody] List<PollutionCreateDTO> createDTOlist)
+        public async Task<ActionResult<MultipleAPIResponse>> CreatePollutions([FromBody] List<PollutionCreateDTO> createDTOlist)
         {
             MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
 
@@ -277,7 +277,7 @@ namespace EcoMonitor.Controllers
                         if(passport == null) 
                             response.ErrorMessages.Add($"No passport with this id:{createDTO.passport_id} was found!");
                         if(rfc == null) 
-                            response.ErrorMessages.Add($"No rfc factor with this id:{createDTO.pollutant_id} was found!");
+                            response.ErrorMessages.Add($"No pollution with this id:{createDTO.pollutant_id} was found!");
                     }
                     multipleResponse.apiResponses.Add(response);
                 }

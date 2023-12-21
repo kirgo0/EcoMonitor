@@ -16,8 +16,17 @@ namespace EcoMonitor.Controllers
 {
     public class NewsController : BasicDataController<INewsRepository, News, NewsDTO, NewsCreateDTO, NewsUpdateDTO>
     {
-        public NewsController(INewsRepository repository) : base(repository)
+        private readonly IFormattedNewsRepository _formattedNewsRepository;
+        public NewsController(INewsRepository repository, IFormattedNewsRepository formattedNewsRepository) : base(repository)
         {
+            _formattedNewsRepository = formattedNewsRepository;
+        }
+
+        public override Task<ActionResult<APIResponse>> GetAll()
+        {
+            var a = _formattedNewsRepository.view.ToList();
+            Console.WriteLine();
+            return null;
         }
 
         [HttpPost]
