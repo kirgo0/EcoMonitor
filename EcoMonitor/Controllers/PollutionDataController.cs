@@ -187,7 +187,7 @@ namespace EcoMonitor.Controllers
                     _response.Result = _mapper.Map<PollutionDTO>(envFactor);
                     _response.StatusCode = HttpStatusCode.Created;
 
-                    return CreatedAtRoute("GetPollution", new { id = envFactor.id }, _response);
+                    return Ok(_response);
                 } else
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
