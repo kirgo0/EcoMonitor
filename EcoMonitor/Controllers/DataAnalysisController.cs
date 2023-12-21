@@ -9,7 +9,7 @@ using System.Net;
 namespace EcoMonitor.Controllers
 {
     [ApiController]
-    [Route("api/DataAnalysis")]
+    [Route("api/[controller]")]
     public class DataAnalysisController : Controller
     {
         protected APIResponse _response;

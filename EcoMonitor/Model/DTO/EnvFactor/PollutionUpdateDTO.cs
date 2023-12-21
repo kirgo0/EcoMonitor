@@ -3,27 +3,27 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EcoMonitor.Model.DTO.EnvFactor
 {
-    public class EnvFactorUpdateDTO
+    public class PollutionUpdateDTO
     {
         [Required]
         [Range(0, int.MaxValue)]
         public int id { get; set; }
         [Required]
         [MaxLength(150)]
-        public string factor_Name { get; set; }
+        public string name { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_value { get; set; }
+        public double value { get; set; }
         [Required]
         public int passport_id { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_Ca_value { get; set; }
+        public double CA_value { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_Ch_value { get; set; }
+        public double CH_value { get; set; }
         [Required]
-        public int rfc_factor_id { get; set; }
+        public int pollutant_id { get; set; }
 
     }
 }

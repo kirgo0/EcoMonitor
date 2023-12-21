@@ -4,9 +4,9 @@ using EcoMonitor.Repository.IRepository;
 
 namespace EcoMonitor.Repository
 {
-    public class RfcFactorRepository : Repository<RfcFactor>, IRfcFactorRepository
+    public class PollutantRepository : Repository<Pollutant>, IPollutantRepository
     {
-        public RfcFactorRepository(ApplicationDbContext db) : base(db)
+        public PollutantRepository(ApplicationDbContext db) : base(db)
         {
         }
         

@@ -15,12 +15,7 @@ using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    [ApiController]
-    [Route("api/PassportData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class PassportDataController : BasicCRUDController<IPassportRepository, Passport, PassportDTO, PassportCreateDTO, PassportUpdateDTO>
+    public class PassportDataController : BasicDataController<IPassportRepository, Passport, PassportDTO, PassportCreateDTO, PassportUpdateDTO>
     {
         private readonly ICompanyRepository _repositoryComapny;
 
@@ -29,21 +24,8 @@ namespace EcoMonitor.Controllers
             _repositoryComapny = repositoryComapny;
         }
 
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> GetAll()
-        {
-            return base.GetAll();
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> Get(int id)
-        {
-            return base.Get(id);
-        }
-
-
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
         [Route("GetPassportsByCompany")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -6,18 +6,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoMonitor.Model
 {
-    [Index(nameof(factor_Name), IsUnique = true)]
-    public class RfcFactor : IEntityWithId
+    [Index(nameof(name), IsUnique = true)]
+    public class Pollutant : IEntityWithId
     {
         [Key]
         public int id { get; set; }
         [Required]
         [MaxLength(150)]
-        public string factor_Name { get; set; }
+        public string name { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_value { get; set; }
+        public double RFC_value { get; set; }
 
         [Range(0, double.MaxValue)]
         public double? SF_value { get; set; }

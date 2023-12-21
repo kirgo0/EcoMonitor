@@ -2,14 +2,14 @@
 
 namespace EcoMonitor.Model.DTO.RfcFactor
 {
-    public class RfcFactorCreateDTO
+    public class PollutantCreateDTO
     {
         [Required]
         [MaxLength(150)]
-        public string factor_Name { get; set; }
+        public string name { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_value { get; set; }
+        public double value { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]

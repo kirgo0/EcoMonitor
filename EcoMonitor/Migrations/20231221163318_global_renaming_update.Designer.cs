@@ -3,6 +3,7 @@ using System;
 using EcoMonitor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMonitor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231221163318_global_renaming_update")]
+    partial class global_renaming_update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +118,50 @@ namespace EcoMonitor.Migrations
                     b.ToTable("company_wastes");
                 });
 
+            modelBuilder.Entity("EcoMonitor.Model.EnvFactor", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("CA_value")
+                        .HasColumnType("double");
+
+                    b.Property<double>("CH_value")
+                        .HasColumnType("double");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<int>("passport_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("pollutant_id")
+                        .HasColumnType("int");
+
+                    b.Property<double>("pollution_value")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("radioactive_disposal_time")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("radioactive_volume")
+                        .HasColumnType("double");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("passport_id");
+
+                    b.HasIndex("pollutant_id");
+
+                    b.HasIndex("name", "passport_id")
+                        .IsUnique();
+
+                    b.ToTable("pollutions");
+                });
+
             modelBuilder.Entity("EcoMonitor.Model.News", b =>
                 {
                     b.Property<int>("id")
@@ -171,7 +218,31 @@ namespace EcoMonitor.Migrations
                     b.ToTable("passports");
                 });
 
-            modelBuilder.Entity("EcoMonitor.Model.Pollutant", b =>
+            modelBuilder.Entity("EcoMonitor.Model.Region", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("population")
+                        .HasColumnType("int");
+
+                    b.Property<double>("square")
+                        .HasColumnType("double");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("name")
+                        .IsUnique();
+
+                    b.ToTable("regions");
+                });
+
+            modelBuilder.Entity("EcoMonitor.Model.RfcFactor", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -206,74 +277,6 @@ namespace EcoMonitor.Migrations
                     b.ToTable("pollutants");
                 });
 
-            modelBuilder.Entity("EcoMonitor.Model.Pollution", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<double>("CA_value")
-                        .HasColumnType("double");
-
-                    b.Property<double>("CH_value")
-                        .HasColumnType("double");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<int>("passport_id")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("pollutant_id")
-                        .HasColumnType("int");
-
-                    b.Property<double>("pollution_value")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("radioactive_disposal_time")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("radioactive_volume")
-                        .HasColumnType("double");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("passport_id");
-
-                    b.HasIndex("pollutant_id");
-
-                    b.HasIndex("name", "passport_id")
-                        .IsUnique();
-
-                    b.ToTable("pollutions");
-                });
-
-            modelBuilder.Entity("EcoMonitor.Model.Region", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("population")
-                        .HasColumnType("int");
-
-                    b.Property<double>("square")
-                        .HasColumnType("double");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("name")
-                        .IsUnique();
-
-                    b.ToTable("regions");
-                });
-
             modelBuilder.Entity("EcoMonitor.Model.TaxNorm", b =>
                 {
                     b.Property<int>("id")
@@ -303,7 +306,7 @@ namespace EcoMonitor.Migrations
                     b.Property<double>("water_emissions")
                         .HasColumnType("double");
 
-                    b.Property<short>("year")
+                    b.Property<short?>("year")
                         .HasColumnType("YEAR(4)");
 
                     b.HasKey("id");
@@ -599,6 +602,23 @@ namespace EcoMonitor.Migrations
                     b.Navigation("Passport");
                 });
 
+            modelBuilder.Entity("EcoMonitor.Model.EnvFactor", b =>
+                {
+                    b.HasOne("EcoMonitor.Model.Passport", "Passport")
+                        .WithMany()
+                        .HasForeignKey("passport_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EcoMonitor.Model.RfcFactor", "RfcFactor")
+                        .WithMany()
+                        .HasForeignKey("pollutant_id");
+
+                    b.Navigation("Passport");
+
+                    b.Navigation("RfcFactor");
+                });
+
             modelBuilder.Entity("EcoMonitor.Model.Passport", b =>
                 {
                     b.HasOne("EcoMonitor.Model.Company", "Company")
@@ -610,30 +630,13 @@ namespace EcoMonitor.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("EcoMonitor.Model.Pollution", b =>
-                {
-                    b.HasOne("EcoMonitor.Model.Passport", "Passport")
-                        .WithMany()
-                        .HasForeignKey("passport_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EcoMonitor.Model.Pollutant", "Pollutant")
-                        .WithMany()
-                        .HasForeignKey("pollutant_id");
-
-                    b.Navigation("Passport");
-
-                    b.Navigation("Pollutant");
-                });
-
             modelBuilder.Entity("EcoMonitor.Model.TaxNorm", b =>
                 {
-                    b.HasOne("EcoMonitor.Model.Pollutant", "Pollutant")
+                    b.HasOne("EcoMonitor.Model.RfcFactor", "RfcFactor")
                         .WithMany()
                         .HasForeignKey("pollutant_id");
 
-                    b.Navigation("Pollutant");
+                    b.Navigation("RfcFactor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

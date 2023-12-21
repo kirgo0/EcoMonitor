@@ -23,10 +23,10 @@ namespace EcoMonitor.Model
 
         public int likes { get; set; }
 
-        public virtual List<User> author { get; set; }
+        public virtual List<User> authors { get; set; }
         public virtual List<User> followers { get; set; }
 
-        public virtual List<Company> company { get; }
+        public virtual List<Company> companies { get; }
 
         public virtual List<Region> regions { get; }
 

@@ -9,9 +9,9 @@ namespace EcoMonitor.Services.MicroServices
 
         private readonly ITaxNormRepository _taxNormRepository;
         private readonly ICompanyWasteRepository _companyWasteRepository;
-        private readonly IEnvFactorRepository _envFactorRepository;
+        private readonly IPollutionRepository _envFactorRepository;
 
-        public TaxSumCalculator(ITaxNormRepository taxNormRepository, ICompanyWasteRepository companyWasteRepository, IEnvFactorRepository envFactorRepository)
+        public TaxSumCalculator(ITaxNormRepository taxNormRepository, ICompanyWasteRepository companyWasteRepository, IPollutionRepository envFactorRepository)
         {
             _taxNormRepository = taxNormRepository;
             _companyWasteRepository = companyWasteRepository;
@@ -31,7 +31,7 @@ namespace EcoMonitor.Services.MicroServices
 
         private double CalculateAirTax(TaxesDTO dto)
         {
-            var masses = new List<EnvFactor>();
+            var masses = new List<Pollution>();
             var taxes = new List<TaxNorm>();
 
             GetEnvFactorsAndTaxes(dto, out masses, out taxes);
@@ -42,7 +42,7 @@ namespace EcoMonitor.Services.MicroServices
             
             for (var i = 0; i < masses.Count; i++)
             {
-                result += masses[i].factor_value * taxes[i].air_emissions;
+                result += masses[i].pollution_value * taxes[i].air_emissions;
             }
 
             return result;
@@ -50,7 +50,7 @@ namespace EcoMonitor.Services.MicroServices
 
         private double CalculateWaterTax(TaxesDTO dto)
         {
-            var masses = new List<EnvFactor>();
+            var masses = new List<Pollution>();
             var taxes = new List<TaxNorm>();
 
             GetEnvFactorsAndTaxes(dto, out masses, out taxes);
@@ -64,7 +64,7 @@ namespace EcoMonitor.Services.MicroServices
                 var companyWaste = _companyWasteRepository.GetAsync(c => c.passport_id == masses[i].passport_id).Result;
                 var koc = 1.0;
                 if (companyWaste != null && companyWaste.Koc) koc = 1.5;
-                result += masses[i].factor_value * taxes[i].water_emissions * koc;
+                result += masses[i].pollution_value * taxes[i].water_emissions * koc;
             }
 
             return result;
@@ -72,7 +72,7 @@ namespace EcoMonitor.Services.MicroServices
 
         private double CalculateDisposeWastesTax(TaxesDTO dto)
         {
-            var masses = new List<EnvFactor>();
+            var masses = new List<Pollution>();
             var taxes = new List<TaxNorm>();
 
             GetEnvFactorsAndTaxes(dto, out masses, out taxes);
@@ -91,7 +91,7 @@ namespace EcoMonitor.Services.MicroServices
                     ko = 3;
                     kt = companyWaste.Kt;
                 }
-                result += masses[i].factor_value * taxes[i].disposal_of_wastes * kt * ko;
+                result += masses[i].pollution_value * taxes[i].disposal_of_wastes * kt * ko;
             }
 
             return result;
@@ -99,7 +99,7 @@ namespace EcoMonitor.Services.MicroServices
 
         private double CalculateRadioactiveTax(TaxesDTO dto)
         {
-            var masses = new List<EnvFactor>();
+            var masses = new List<Pollution>();
             var taxes = new List<TaxNorm>();
 
             GetEnvFactorsAndTaxes(dto, out masses, out taxes);
@@ -112,7 +112,7 @@ namespace EcoMonitor.Services.MicroServices
             {
                 var radVol = masses[i].radioactive_volume;
                 if (radVol.HasValue && radVol.Value > 0)
-                    result += masses[i].factor_value * taxes[i].radioactive_wastes * radVol.Value * GetRadK();
+                    result += masses[i].pollution_value * taxes[i].radioactive_wastes * radVol.Value * GetRadK();
             }
 
             return result;
@@ -120,7 +120,7 @@ namespace EcoMonitor.Services.MicroServices
 
         private double CalculateTempRadioactiveTax(TaxesDTO dto)
         {
-            var masses = new List<EnvFactor>();
+            var masses = new List<Pollution>();
             var taxes = new List<TaxNorm>();
 
             GetEnvFactorsAndTaxes(dto, out masses, out taxes);
@@ -136,7 +136,7 @@ namespace EcoMonitor.Services.MicroServices
 
                 if(time.HasValue && radVol.HasValue &&
                     time.Value>0 && radVol.Value>0)
-                result += masses[i].factor_value * 
+                result += masses[i].pollution_value * 
                     taxes[i].temporary_disposal_of_radioactive_wastes *
                     time.Value * radVol.Value; 
             }
@@ -144,9 +144,9 @@ namespace EcoMonitor.Services.MicroServices
             return result;
         }
 
-        private void GetEnvFactorsAndTaxes(TaxesDTO dto, out List<EnvFactor> masses, out List<TaxNorm> taxes)
+        private void GetEnvFactorsAndTaxes(TaxesDTO dto, out List<Pollution> masses, out List<TaxNorm> taxes)
         {
-            masses = new List<EnvFactor>();
+            masses = new List<Pollution>();
             taxes = new List<TaxNorm>();
 
             masses = _envFactorRepository.GetAllAsync(f =>
@@ -162,7 +162,7 @@ namespace EcoMonitor.Services.MicroServices
             {
                 var f = masses[i];
                 var tax = _taxNormRepository.GetAsync(t =>
-                    t.rfc_factor_id == f.rfc_factor_id && t.year == f.Passport.year
+                    t.pollutant_id == f.pollutant_id && t.year == f.Passport.year
                     ).Result;
 
                 if (tax == null)

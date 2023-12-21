@@ -14,32 +14,13 @@ using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    [ApiController]
-    [Route("api/CompanyData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class CompanyDataController : BasicCRUDController<ICompanyRepository, Company, CompanyDTO, CompanyCreateDTO, CompanyUpdateDTO>
+    public class CompanyDataController : BasicDataController<ICompanyRepository, Company, CompanyDTO, CompanyCreateDTO, CompanyUpdateDTO>
     {
         private readonly ICityRepository _repositoryCity;
         public CompanyDataController(ICompanyRepository repository, ICityRepository repositoryCity) : base(repository)
         {
             _repositoryCity = repositoryCity;
         }
-
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> GetAll()
-        {
-            return base.GetAll();
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> Get(int id)
-        {
-            return base.Get(id);
-        }
-
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]

@@ -5,22 +5,29 @@ using EcoMonitor.Model.DTO.Company;
 using EcoMonitor.Model.DTO.EnvFactor;
 using EcoMonitor.Model.Interfaces;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using System.Data;
 using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    public abstract class BasicCRUDController<T, U, UDTO, UCreateDTO, UUpdateDTO> : 
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public abstract class BasicDataController<T, U, UDTO, UCreateDTO, UUpdateDTO> : 
         Controller where T : IRepository<U> where U : class, IEntityWithId where UDTO : class where UCreateDTO : class where UUpdateDTO : class
     {
         protected APIResponse _response;
         protected readonly T _repository;
         protected readonly IMapper _mapper;
 
-        public BasicCRUDController(T repository)
+        public BasicDataController(T repository)
         {
             _response = new();
             _repository = repository;
@@ -34,6 +41,7 @@ namespace EcoMonitor.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,6 +74,7 @@ namespace EcoMonitor.Controllers
 
 
         [HttpGet("id:int")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

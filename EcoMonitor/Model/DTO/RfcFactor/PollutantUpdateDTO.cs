@@ -2,7 +2,7 @@
 
 namespace EcoMonitor.Model.DTO.RfcFactor
 {
-    public class RfcFactorUpdateDTO
+    public class PollutantUpdateDTO
     {
         [Required]
         [Range(0, int.MaxValue)]
@@ -10,11 +10,11 @@ namespace EcoMonitor.Model.DTO.RfcFactor
 
         [Required]
         [MaxLength(150)]
-        public string factor_Name { get; set; }
+        public string name { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]
-        public double factor_value { get; set; }
+        public double value { get; set; }
 
         [Required]
         [Range(0, double.MaxValue)]

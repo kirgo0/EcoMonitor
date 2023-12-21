@@ -15,13 +15,13 @@ namespace EcoMonitor
     {
         public MapperConfig()
         {
-            CreateMap<EnvFactor, EnvFactorDTO>().ReverseMap();
-            CreateMap<EnvFactorCreateDTO, EnvFactor>().ReverseMap();
-            CreateMap<EnvFactorUpdateDTO, EnvFactor>().ReverseMap();
+            CreateMap<Pollution, PollutionDTO>().ReverseMap();
+            CreateMap<PollutionCreateDTO, Pollution>().ReverseMap();
+            CreateMap<PollutionUpdateDTO, Pollution>().ReverseMap();
             
-            CreateMap<RfcFactor, RfcFactorDTO>().ReverseMap();
-            CreateMap<RfcFactorCreateDTO, RfcFactor>().ReverseMap();
-            CreateMap<RfcFactorUpdateDTO, RfcFactor>().ReverseMap();
+            CreateMap<Pollutant, PollutantDTO>().ReverseMap();
+            CreateMap<PollutantCreateDTO, Pollutant>().ReverseMap();
+            CreateMap<PollutantUpdateDTO, Pollutant>().ReverseMap();
 
             CreateMap<Company, CompanyDTO>().ReverseMap();
             CreateMap<CompanyCreateDTO, Company>().ReverseMap();

@@ -9,7 +9,7 @@ namespace EcoMonitor.Data
         public void Configure(EntityTypeBuilder<User> user)
         {
             user.HasMany(user => user.news)
-                .WithMany(news => news.author);
+                .WithMany(news => news.authors);
 
             user.HasMany(user => user.likedNews)
                 .WithMany(news => news.followers)

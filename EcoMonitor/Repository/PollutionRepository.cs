@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 
 namespace EcoMonitor.Repository
 {
-    public class EnvFactorRepository : Repository<EnvFactor>, IEnvFactorRepository
+    public class PollutionRepository : Repository<Pollution>, IPollutionRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public EnvFactorRepository(ApplicationDbContext db) : base(db)
+        public PollutionRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

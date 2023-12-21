@@ -11,10 +11,10 @@ namespace EcoMonitor.Data
         {
         }
 
-        public DbSet<EnvFactor> env_Factors { get; set; }
+        public DbSet<Pollution> pollutions { get; set; }
         public DbSet<Passport> passports { get; set; }
         public DbSet<Company> companies { get; set; }
-        public DbSet<RfcFactor> rfc_Factors { get; set; }
+        public DbSet<Pollutant> pollutants { get; set; }
         public DbSet<Region> regions { get; set; }
         public DbSet<City> cities { get; set; }
         public DbSet<News> news { get; set; }

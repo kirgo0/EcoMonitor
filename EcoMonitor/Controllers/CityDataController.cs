@@ -13,31 +13,13 @@ using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class CityDataController : BasicCRUDController<ICityRepository, City, CityDTO, CityCreateDTO, CityUpdateDTO>
+    public class CityDataController : BasicDataController<ICityRepository, City, CityDTO, CityCreateDTO, CityUpdateDTO>
     {
         private readonly IRegionRepository _repositoryRegion;
         public CityDataController(ICityRepository repository, IRegionRepository repositoryRegion) : base(repository)
         {
             _repositoryRegion = repositoryRegion;
         }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> GetAll()
-        {
-            return base.GetAll();
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> Get(int id)
-        {
-            return base.Get(id);
-        }
-
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]

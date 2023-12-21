@@ -12,27 +12,10 @@ using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    [ApiController]
-    [Route("api/RfcData")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class RfcDataController : BasicCRUDController<IRfcFactorRepository, RfcFactor, RfcFactorDTO, RfcFactorCreateDTO, RfcFactorUpdateDTO>
+    public class PollutantDataController : BasicDataController<IPollutantRepository, Pollutant, PollutantDTO, PollutantCreateDTO, PollutantUpdateDTO>
     {
-        public RfcDataController(IRfcFactorRepository repository) : base(repository)
+        public PollutantDataController(IPollutantRepository repository) : base(repository)
         {
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> GetAll()
-        {
-            return base.GetAll();
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> Get(int id)
-        {
-            return base.Get(id);
         }
 
         [HttpPost, Route("CreateRfcFactors")]
@@ -41,7 +24,7 @@ namespace EcoMonitor.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MultipleAPIResponse>> CreateRfcFactors([FromBody] List<RfcFactorCreateDTO> createDTOlist)
+        public async Task<ActionResult<MultipleAPIResponse>> CreateRfcFactors([FromBody] List<PollutantCreateDTO> createDTOlist)
         {
             MultipleAPIResponse multipleResponse = new MultipleAPIResponse();
 
@@ -67,9 +50,9 @@ namespace EcoMonitor.Controllers
                 APIResponse response = new APIResponse();
                 try
                 {
-                    RfcFactor factor = _mapper.Map<RfcFactor>(createDTO);
+                    Pollutant factor = _mapper.Map<Pollutant>(createDTO);
 
-                    if (await _repository.GetAsync(f => f.factor_Name== createDTO.factor_Name) != null)
+                    if (await _repository.GetAsync(f => f.name== createDTO.name) != null)
                     {
                         response.StatusCode = HttpStatusCode.Conflict;
                         response.IsSuccess = false;
@@ -78,7 +61,7 @@ namespace EcoMonitor.Controllers
                     else
                     {
                         await _repository.CreateAsync(factor);
-                        response.Result = _mapper.Map<RfcFactorDTO>(factor);
+                        response.Result = _mapper.Map<PollutantDTO>(factor);
                         response.StatusCode = HttpStatusCode.Created;
                     }
                     multipleResponse.apiResponses.Add(response);

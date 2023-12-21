@@ -2,7 +2,7 @@
 
 namespace EcoMonitor.Repository.IRepository
 {
-    public interface IRfcFactorRepository : IRepository<RfcFactor>
+    public interface IPollutionRepository : IRepository<Pollution>
     {
     }
 }

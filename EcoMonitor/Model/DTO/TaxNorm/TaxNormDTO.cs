@@ -26,7 +26,7 @@ namespace EcoMonitor.Model.DTO.TaxNorm
         public double temporary_disposal_of_radioactive_wastes { get; set; }
         [Required]
         [Range(0, int.MaxValue)]
-        public int rfc_factor_id { get; set; }
+        public int pollutant_id { get; set; }
         [Range(2000, 2030)]
         public int? year { get; set; }
     }

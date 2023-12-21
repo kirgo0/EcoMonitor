@@ -14,27 +14,10 @@ using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    [Route("api/News")]
-    [ApiController]
-    [Authorize(Roles = "NewsModerator")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public class NewsController : BasicCRUDController<INewsRepository, News, NewsDTO, NewsCreateDTO, NewsUpdateDTO>
+    public class NewsController : BasicDataController<INewsRepository, News, NewsDTO, NewsCreateDTO, NewsUpdateDTO>
     {
         public NewsController(INewsRepository repository) : base(repository)
         {
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> GetAll()
-        {
-            return base.GetAll();
-        }
-
-        [AllowAnonymous]
-        public override Task<ActionResult<APIResponse>> Get(int id)
-        {
-            return base.Get(id);
         }
 
         [HttpPost]

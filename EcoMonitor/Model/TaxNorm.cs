@@ -6,14 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoMonitor.Model
 {
-    [Index(nameof(year), nameof(factor_Name), IsUnique = true)]
+    [Index(nameof(year), nameof(name), IsUnique = true)]
     public class TaxNorm : IEntityWithId
     {
         [Key]
         public int id { get; set; }
         [Required]
         [MaxLength(150)]
-        public string factor_Name { get; set; }
+        public string name { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
         public double air_emissions { get; set; }
@@ -30,12 +30,12 @@ namespace EcoMonitor.Model
         [Range(0, double.MaxValue)]
         public double temporary_disposal_of_radioactive_wastes { get; set; }
 
-        [ForeignKey("RfcFactor")]
-        public int? rfc_factor_id { get; set; }
+        [ForeignKey("Pollutant")]
+        public int? pollutant_id { get; set; }
 
-        public RfcFactor RfcFactor { get; set; }
+        public Pollutant Pollutant { get; set; }
 
         [Column(TypeName = "YEAR(4)")]
-        public int? year { get; set; }
+        public int year { get; set; }
     }
 }
