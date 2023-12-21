@@ -23,9 +23,6 @@ namespace EcoMonitor.Services
             _mapper = mapper;
         }
 
-        public void CreateNews()
-        {
 
-        }
     }
 }

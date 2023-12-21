@@ -2,7 +2,7 @@
 
 namespace EcoMonitor.Model.DTO.RfcFactor
 {
-    public class PollutantUpdateDTO
+    public class PollutantDTO
     {
         [Required]
         [Range(0, int.MaxValue)]
@@ -14,20 +14,18 @@ namespace EcoMonitor.Model.DTO.RfcFactor
 
         [Required]
         [Range(0, double.MaxValue)]
-        public double value { get; set; }
+        public double RFC_value { get; set; }
 
-        [Required]
         [Range(0, double.MaxValue)]
-        public double SF_value { get; set; }
+        public double? SF_value { get; set; }
 
-        [Required]
         [Range(0, double.MaxValue)]
-        public double GDK_value { get; set; }
+        public double? GDK_value { get; set; }
 
-        [Required]
         [Range(0, double.MaxValue)]
-        public double mass_flow_rate { get; set; }
+        public double? mass_flow_rate { get; set; }
+
+        [MaxLength(150)]
         public string damaged_organs { get; set; }
-
     }
 }
