@@ -8,6 +8,8 @@ namespace EcoMonitor.Model.DTO.News
         public string title { get; set; }
         [Required]
         public string body { get; set; }
+        [Url]
+        public string? source_url { get; set; }
         [Required]
         public string author_id { get; set; }
 

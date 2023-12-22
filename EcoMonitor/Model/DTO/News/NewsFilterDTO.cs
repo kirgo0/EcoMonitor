@@ -1,4 +1,4 @@
-﻿namespace EcoMonitor.Model.DTO
+﻿namespace EcoMonitor.Model.DTO.News
 {
     public class NewsFilterDTO
     {
@@ -8,6 +8,7 @@
         public bool? newerToOlder { get; set; }
         public DateTime? fromDate { get; set; }
         public DateTime? toDate { get; set; }
+        public string source_url { get; set; }
         public List<int> region_ids { get; set; }
         public List<string> author_ids { get; set; }
         public List<int> company_ids { get; set; }

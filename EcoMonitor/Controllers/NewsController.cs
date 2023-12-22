@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Net;
 
@@ -35,10 +36,13 @@ namespace EcoMonitor.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Route("GetNewsByFilter")]
         public ActionResult<APIResponse> GetNewsByFilter(
-            [FromQuery] int? page,
-            [FromQuery] int? count,
+            [FromQuery][Range(0,int.MaxValue)] int? page,
+            [FromQuery][Range(0, int.MaxValue)] int? count,
             [FromQuery] bool? byRelevance,
             [FromQuery] bool? newerToOlder,
             [FromQuery] DateTime? fromDate,
@@ -49,19 +53,43 @@ namespace EcoMonitor.Controllers
             )
         {
 
-            if(page < 0 || count <= 0)
+            if(!ModelState.IsValid)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+
+                _response.ErrorMessages.AddRange(
+                    ModelState.Values.SelectMany
+                    (v => v.Errors
+                    .Select(e => e.ErrorMessage)
+                    )
+                    );
+
+                return BadRequest(_response);
+            }
+
+            if(author_ids != null)
+            {
+                author_ids.RemoveAll(a => a.IsNullOrEmpty());
+            }
+
+            if(fromDate != null && toDate == null || fromDate == null && toDate != null)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Page and count must be a positive numbers!");
                 return BadRequest(_response);
             }
-            if(author_ids != null)
+
+            if(fromDate != null && toDate != null && fromDate >= toDate)
             {
-                author_ids.RemoveAll(a => a.IsNullOrEmpty());
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("fromDate must be less that toDate!");
+                return BadRequest(_response);
             }
 
-            var filters = new NewsFilterDTO()
+                var filters = new NewsFilterDTO()
             {
                 page = page,
                 count = count,
@@ -74,16 +102,35 @@ namespace EcoMonitor.Controllers
                 company_ids = company_ids
             };
 
-            var result = _newsService.GetFilteredFormattedNews(filters);
-            if(result != null)
+            try
             {
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.Result = result;
-                return Ok(_response);
+                var result = _newsService.GetFilteredFormattedNews(filters);
 
+                if (result != null && result.Count > 0)
+                {
+                    var news = _mapper.Map<List<FormattedNewsDTO>>(result);
+
+                    _response.StatusCode = HttpStatusCode.OK;
+                    _response.Result = new FormattedNewsResponseDTO()
+                    {
+                        remainingRowsCount = _newsService.lastRequestRemainingRows.Value,
+                        selectedNews = news,
+                        isItEnd = _newsService.isItEnd.Value
+                    };
+                    return Ok(_response);
+                } else if(result.Count == 0)
+                {
+                    return NoContent();
+                }
             }
 
-            return NoContent();
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
         }
 
     }

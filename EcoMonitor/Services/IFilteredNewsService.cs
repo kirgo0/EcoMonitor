@@ -1,12 +1,15 @@
 ﻿using EcoMonitor.Model;
-using EcoMonitor.Model.DTO;
+using EcoMonitor.Model.DTO.News;
 using EcoMonitor.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Linq.Expressions;
 
 namespace EcoMonitor.Services
 {
     public interface IFilteredNewsService
     {
+        bool? isItEnd { get; }
+        int? lastRequestRemainingRows { get; }
         int? page { get; set; }
         int? count { get; set; }
         bool? isDescending { get; set; }
@@ -17,11 +20,16 @@ namespace EcoMonitor.Services
 
     public class FilteredNewsService : IFilteredNewsService
     {
+        public int? lastRequestRemainingRows { get; private set; }
+        public bool? isItEnd { get; private set; }
+
+        // props for filtering
         public int? page { get; set; } = 0;
         public int? count { get; set; } = 10;
         public bool? isDescending { get; set; } = false;
         public DateTime? fromDate { get; set; } = null;
         public DateTime? toDate { get; set; } = null;
+
 
         private readonly INewsRepository _newsRepository;
         private readonly IFormattedNewsRepository _formattedNewsRepository;
@@ -131,6 +139,18 @@ namespace EcoMonitor.Services
                 {
                     query = query.OrderBy(n => n.post_date);
                 }
+            }
+
+            // giving away last request max count before Skiping and Taking needed count
+            var remainingRows = query.Count() - (page.Value * count.Value + count.Value);
+            if(remainingRows > 0)
+            {
+                lastRequestRemainingRows = remainingRows;
+                isItEnd = false;
+            } else
+            {
+                lastRequestRemainingRows = 0;
+                isItEnd = true;
             }
 
             query = query
