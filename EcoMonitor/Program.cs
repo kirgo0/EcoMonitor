@@ -19,7 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 //var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
 //var connectionString = builder.Configuration.GetConnectionString("GoogleMySQLPublic");
-var connectionString = builder.Configuration.GetConnectionString("MySQL");
+//var connectionString = builder.Configuration.GetConnectionString("MySQL");
+
+string secret = Environment.GetEnvironmentVariable("GoogleMySQL");
+if (secret == null)
+{
+    throw new InvalidOperationException("\"GoogleMySQL\" is required.");
+}
+
+var connectionString = secret;
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
     option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
