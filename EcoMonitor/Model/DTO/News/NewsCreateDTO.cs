@@ -7,7 +7,7 @@ namespace EcoMonitor.Model.DTO.News
         [Required]
         public string title { get; set; }
         [Required]
-        public string description { get; set; }
+        public string body { get; set; }
         [Required]
         public string author_id { get; set; }
 

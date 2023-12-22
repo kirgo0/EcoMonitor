@@ -9,7 +9,7 @@ namespace EcoMonitor.Model.DTO.News
         [Required]
         public string title { get; set; }
         [Required]
-        public string description { get; set; }
+        public string body { get; set; }
         [Required]
         public DateTime post_date { get; set; }
         public DateTime? update_date { get; set; }

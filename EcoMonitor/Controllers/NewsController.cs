@@ -1,144 +1,90 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO;
 using EcoMonitor.Model.DTO.News;
 using EcoMonitor.Repository.IRepository;
+using EcoMonitor.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.Net;
 
 namespace EcoMonitor.Controllers
 {
-    public class NewsController : BasicDataController<INewsRepository, News, NewsDTO, NewsCreateDTO, NewsUpdateDTO>
+    [Route("api/[controller]")]
+    [ApiController]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public class NewsController : Controller
     {
-        private readonly IFormattedNewsRepository _formattedNewsRepository;
-        public NewsController(INewsRepository repository, IFormattedNewsRepository formattedNewsRepository) : base(repository)
+        private readonly INewsService _newsService;
+        private readonly IMapper _mapper;
+        private APIResponse _response;
+        public NewsController(INewsRepository repository, INewsService newsService) 
         {
-            _formattedNewsRepository = formattedNewsRepository;
+            _newsService = newsService;
+            _mapper = new MapperConfiguration(
+                options => options.CreateMap<FormattedNews, FormattedNewsDTO>().ReverseMap()
+                ).CreateMapper();
+            _response = new APIResponse();
         }
 
-        public override Task<ActionResult<APIResponse>> GetAll()
+        [HttpGet]
+        [Route("GetNewsByFilter")]
+        public ActionResult<APIResponse> GetNewsByFilter(
+            [FromQuery] int? page,
+            [FromQuery] int? count,
+            [FromQuery] bool? byRelevance,
+            [FromQuery] bool? newerToOlder,
+            [FromQuery] DateTime? fromDate,
+            [FromQuery] DateTime? toDate,
+            [FromQuery] List<int>? region_ids,
+            [FromQuery] List<string>? author_ids,
+            [FromQuery] List<int>? company_ids
+            )
         {
-            var a = _formattedNewsRepository.view.AsNoTracking().ToList();
-            // geting count of likes (authors)
-            var b = _repository.dbSet.Where(n => n.id == 1).SelectMany(n => n.authors).Count();
-            Console.WriteLine();
-            return null;
-        }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public override async Task<ActionResult<APIResponse>> Create([FromBody] NewsCreateDTO createDTO)
-        {
-            if (!ModelState.IsValid)
+            if(page < 0 || count <= 0)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                foreach (var modelError in ModelState.Values)
-                {
-                    foreach (ModelError error in modelError.Errors)
-                    {
-                        _response.ErrorMessages.Add(error.ErrorMessage);
-                    }
-                }
+                _response.ErrorMessages.Add("Page and count must be a positive numbers!");
                 return BadRequest(_response);
             }
-            try
+            if(author_ids != null)
             {
-                News news = _mapper.Map<News>(createDTO);
-
-                news.post_date = DateTime.Now;
-                await _repository.CreateAsync(news);
-
-                _response.Result = _mapper.Map<NewsDTO>(news);
-                _response.StatusCode = HttpStatusCode.Created;
-
-                return Created("", _response);
+                author_ids.RemoveAll(a => a.IsNullOrEmpty());
             }
-            catch (DbUpdateException ex)
+
+            var filters = new NewsFilterDTO()
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add($"News with this name already exists");
-                    return Conflict(_response);
-                }
-            }
-            catch (Exception ex)
+                page = page,
+                count = count,
+                byRelevance = byRelevance,
+                newerToOlder = newerToOlder,
+                fromDate = fromDate,
+                toDate = toDate,
+                region_ids = region_ids,
+                author_ids = author_ids,
+                company_ids = company_ids
+            };
+
+            var result = _newsService.GetFilteredFormattedNews(filters);
+            if(result != null)
             {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result;
+                return Ok(_response);
+
             }
-            return StatusCode(500, _response);
+
+            return NoContent();
         }
 
-
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public override async Task<ActionResult<APIResponse>> Update([FromBody] NewsUpdateDTO updateDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                foreach (var modelError in ModelState.Values)
-                {
-                    foreach (ModelError error in modelError.Errors)
-                    {
-                        _response.ErrorMessages.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(_response);
-            }
-            try
-            {
-                News model = _mapper.Map<News>(updateDTO);
-
-                if (await _repository.GetAsync(n => n.id == model.id, false) == null)
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.IsSuccess = false;
-                    return NotFound(_response);
-                }
-                model.update_date = DateTime.Now;
-
-                await _repository.UpdateAsync(model);
-                return NoContent();
-
-            }
-            catch (DbUpdateException ex)
-            {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("News with this name already exists");
-                    return Conflict(_response);
-                }
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = new List<string>() { ex.ToString() };
-            }
-            return StatusCode(500, _response);
-        }
     }
 }

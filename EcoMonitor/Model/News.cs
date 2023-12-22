@@ -22,8 +22,6 @@ namespace EcoMonitor.Model
         public DateTime post_date { get; set; }
         public DateTime? update_date { get; set; }
 
-        public int likes { get; set; }
-
         public virtual List<User> authors { get; set; }
         public virtual List<User> followers { get; set; }
 

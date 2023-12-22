@@ -17,9 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
+//var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
 //var connectionString = builder.Configuration.GetConnectionString("GoogleMySQLPublic");
-//var connectionString = builder.Configuration.GetConnectionString("MySQL");
+var connectionString = builder.Configuration.GetConnectionString("MySQL");
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
     option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -73,7 +73,7 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ITaxNormRepository, TaxNormRepository>();
 builder.Services.AddScoped<ICompanyWasteRepository, CompanyWasteRepository>();
-builder.Services.AddScoped<IFormattedNewsRepository, FormatedNewsRepository>();
+builder.Services.AddScoped<IFormattedNewsRepository, FormattedNewsRepository>();
 
 
 builder.Services.AddScoped<ICalculateService, CalculateService>();
@@ -81,6 +81,8 @@ builder.Services.AddScoped<TaxSumCalculator, TaxSumCalculator>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<IFilteredNewsService, FilteredNewsService>();
 
 
 builder.Services.AddControllers();

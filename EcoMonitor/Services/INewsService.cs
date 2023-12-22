@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
+using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO;
+using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
+using System.Linq.Expressions;
 
 namespace EcoMonitor.Services
 {
     public interface INewsService
     {
-
+        List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto);
     }
 
     public class NewsService : INewsService
@@ -14,19 +18,20 @@ namespace EcoMonitor.Services
 
         private APIResponse _response;
         private readonly INewsRepository _newsRepository;
+        private readonly IFilteredNewsService _filteredNewsService;
         private IMapper _mapper;
 
-        public NewsService(APIResponse response, INewsRepository newsRepository, IMapper mapper)
+        public NewsService(INewsRepository newsRepository, IFilteredNewsService filteredNewsService, IMapper mapper)
         {
-            _response = response;
+            _response = new APIResponse();
             _newsRepository = newsRepository;
+            _filteredNewsService = filteredNewsService;
             _mapper = mapper;
         }
 
-        public void GetNewsNamesByRegion()
+        public List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto)
         {
-            
+            return _filteredNewsService.GetFilteredFormattedNews(dto);
         }
-
     }
 }
