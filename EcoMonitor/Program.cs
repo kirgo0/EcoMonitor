@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -17,17 +18,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//var connectionString = builder.Configuration.GetConnectionString("GoogleMySQL");
 //var connectionString = builder.Configuration.GetConnectionString("GoogleMySQLPublic");
-//var connectionString = builder.Configuration.GetConnectionString("MySQL");
 
-string secret = Environment.GetEnvironmentVariable("GoogleMySQL");
-if (secret == null)
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+string connectionString;
+
+if (env == "Development")
 {
-    throw new InvalidOperationException("\"GoogleMySQL\" is required.");
+    connectionString = Environment.GetEnvironmentVariable("GoogleMySQLPublic");
+    connectionString = builder.Configuration.GetConnectionString("MySQL");
 }
+else
+{
+    // For other environments (e.g., Production), use the environment variable
+    string secret = Environment.GetEnvironmentVariable("GoogleMySQL");
 
-var connectionString = secret;
+    if (secret == null)
+    {
+        throw new InvalidOperationException("\"GoogleMySQL\" is required.");
+    }
+    connectionString = secret;
+}
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => {
     option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
