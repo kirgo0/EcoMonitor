@@ -6,6 +6,7 @@ using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace EcoMonitor.Services
@@ -52,7 +53,9 @@ namespace EcoMonitor.Services
 
         public int? UpdateLikeField(string userId, int newsId)
         {
-            var news = _newsRepository.GetAsync(n => n.id == newsId, includeProperties: "followers").GetAwaiter().GetResult();
+            var query = _newsRepository.dbSet.Where(n => n.id == newsId).Include("followers");
+
+            var news = query.FirstOrDefault();
 
             if(news == null)
                 return null;
@@ -70,6 +73,8 @@ namespace EcoMonitor.Services
             {
                 news.followers.Remove(user);
             }
+
+            _newsRepository.SaveAsync().GetAwaiter().GetResult();
 
             var likesCount = _formattedNewsRepository.GetView(fn => fn.id == newsId).First().likes;
 

@@ -16,6 +16,7 @@ using MySql.Data.MySqlClient;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Net;
+using System.Security.Claims;
 
 namespace EcoMonitor.Controllers
 {
@@ -27,7 +28,7 @@ namespace EcoMonitor.Controllers
         private readonly INewsService _newsService;
         private readonly IMapper _mapper;
         private APIResponse _response;
-        public NewsController(INewsRepository repository, INewsService newsService)
+        public NewsController(INewsService newsService)
         {
             _newsService = newsService;
             _mapper = new MapperConfiguration(
@@ -148,18 +149,53 @@ namespace EcoMonitor.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("LikeNews")]
-        //public async ActionResult<APIResponse> LikeNews([FromQuery] string userId, [FromQuery] int newsId) 
-        //{ 
-
-        //}
-
         [HttpPost]
+        [Authorize]
         [Route("LikeNews")]
-        public void LikeNews([FromQuery] string userId, [FromQuery] int newsId)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<APIResponse> LikeNews([FromQuery, Required] string userId, [FromQuery, Range(0, int.MaxValue), Required] int newsId)
         {
-            var result = _newsService.UpdateLikeField(userId, newsId);
+            var tokneUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(tokneUserId != userId)
+            {
+                _response.StatusCode = HttpStatusCode.Unauthorized;
+                _response.IsSuccess = false;
+                return Unauthorized(_response);
+            }
+
+            if (userId.IsNullOrEmpty())
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.ErrorMessages.Add("You need to specify user id!");
+                return BadRequest(_response);
+            }
+
+            try
+            {
+                var result = _newsService.UpdateLikeField(userId, newsId);
+
+                if(result == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(_response);
+                }
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result.Value;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
         }
+
     }
 }

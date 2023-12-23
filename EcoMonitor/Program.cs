@@ -35,14 +35,14 @@ else
     connectionString = secret;
 }
 
-//builder.Services.AddDbContext<ApplicationDbContext>(option =>
-//{
-//    option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-//});
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
     option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-}, ServiceLifetime.Transient);
+});
+//builder.Services.AddDbContext<ApplicationDbContext>(option =>
+//{
+//    option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+//}, ServiceLifetime.Transient);
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
