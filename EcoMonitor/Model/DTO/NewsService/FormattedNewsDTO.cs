@@ -14,5 +14,6 @@ namespace EcoMonitor.Model.DTO.NewsService
         public string region_names { get; set; }
         public string company_names { get; set; }
         public int likes { get; set; }
+        public bool isLiked { get; set; }
     }
 }

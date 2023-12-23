@@ -7,6 +7,7 @@ using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace EcoMonitor.Services
@@ -15,8 +16,9 @@ namespace EcoMonitor.Services
     {
         int? lastRequestRemainingRows { get; }
         bool? isItEnd { get; }
-        List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto);
+        List<FormattedNewsDTO> GetFilteredFormattedNews(NewsFilterDTO dto, string userId);
         int? UpdateLikeField(string userId, int newsId);
+        List<RegionNewsDTO> GetRegionsNews(int regionsCount, int newsCount);
     }
 
     public class NewsService : INewsService
@@ -43,12 +45,22 @@ namespace EcoMonitor.Services
             _userManager = userManager;
         }
 
-        public List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto)
+        public List<FormattedNewsDTO> GetFilteredFormattedNews(NewsFilterDTO dto, string userId)
         {
             var result = _filteredNewsService.GetFilteredFormattedNews(dto);
             lastRequestRemainingRows = _filteredNewsService.lastRequestRemainingRows;
             isItEnd = _filteredNewsService.isItEnd;
-            return result;
+
+            var mappedResults = _mapper.Map<List<FormattedNewsDTO>>(result);
+
+            if(userId != null)
+            {
+                mappedResults.ForEach(mr =>
+                {
+                    mr.isLiked = _newsRepository.dbSet.Where(n => n.id == mr.id).Include("followers").First().followers.Any(u => u.Id == userId);
+                });
+            }
+            return mappedResults;
         }
 
         public int? UpdateLikeField(string userId, int newsId)
@@ -80,5 +92,32 @@ namespace EcoMonitor.Services
 
             return likesCount;
         }
+
+        public List<RegionNewsDTO> GetRegionsNews(int regionsCount, int newsCount)
+        {
+
+            var regionNews = _newsRepository.dbSet
+            .Where(n => n.regions.Any())
+            .SelectMany(n => n.regions, (news, region) => new { News = news, Region = region })
+            .GroupBy(x => x.Region.name)
+            .Select(g => new RegionNewsDTO
+            {
+                region_name = g.Key,
+                news = g
+                    .OrderByDescending(x => x.News.post_date) 
+                    .Select(x => new NarrowNewsDTO 
+                    {
+                        id = x.News.id,
+                        title = x.News.title
+                    })
+                    .Take(newsCount) 
+                    .ToList()
+            })
+            .Take(regionsCount)
+            .ToList();
+
+            return regionNews;
+        }
+
     }
 }

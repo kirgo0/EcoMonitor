@@ -10,7 +10,6 @@ namespace EcoMonitor.Model.DTO.Region
         public string name { get; set; }
         [Required]
         public int population { get; set; }
-        [Required]
-        public double square { get; set; }
+        public double? square { get; set; }
     }
 }

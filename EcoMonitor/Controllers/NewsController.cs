@@ -28,13 +28,11 @@ namespace EcoMonitor.Controllers
         private readonly INewsService _newsService;
         private readonly IMapper _mapper;
         private APIResponse _response;
-        public NewsController(INewsService newsService)
+        public NewsController(INewsService newsService, IMapper mapper)
         {
             _newsService = newsService;
-            _mapper = new MapperConfiguration(
-                options => options.CreateMap<FormattedNews, FormattedNewsDTO>().ReverseMap()
-                ).CreateMapper();
             _response = new APIResponse();
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -51,7 +49,8 @@ namespace EcoMonitor.Controllers
             [FromQuery] DateTime? toDate,
             [FromQuery] List<int>? region_ids,
             [FromQuery] List<string>? author_ids,
-            [FromQuery] List<int>? company_ids
+            [FromQuery] List<int>? company_ids,
+            [FromQuery] string? userId
             )
         {
 
@@ -113,7 +112,7 @@ namespace EcoMonitor.Controllers
 
             try
             {
-                var result = _newsService.GetFilteredFormattedNews(filters);
+                var result = _newsService.GetFilteredFormattedNews(filters, userId);
 
                 if (result != null && result.Count > 0)
                 {
@@ -197,5 +196,25 @@ namespace EcoMonitor.Controllers
             return StatusCode(500, _response);
         }
 
+        [HttpGet]
+        [Route("GetRegionNews")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<APIResponse> GetRegionNews([FromQuery, Required] int regionsCount, [FromQuery, Required] int newsCount)
+        {
+            try
+            {
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = _newsService.GetRegionsNews(regionsCount, newsCount);
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
+        }
+        
     }
 }

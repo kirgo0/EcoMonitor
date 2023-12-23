@@ -1,5 +1,6 @@
 ﻿using EcoMonitor.Model.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace EcoMonitor.Model
@@ -11,10 +12,8 @@ namespace EcoMonitor.Model
         public int id { get; set; }
         [Required]
         public string name { get; set; }
-        [Required]
-        public int population { get; set; }
-        [Required]
-        public double square { get; set; }
+        public int? population { get; set; }
+        public double? square { get; set; }
         public List<News> news { get; set; }
     }
 }

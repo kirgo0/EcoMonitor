@@ -4,6 +4,7 @@ using EcoMonitor.Model.DTO.City;
 using EcoMonitor.Model.DTO.Company;
 using EcoMonitor.Model.DTO.EnvFactor;
 using EcoMonitor.Model.DTO.News;
+using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Model.DTO.Passport;
 using EcoMonitor.Model.DTO.Region;
 using EcoMonitor.Model.DTO.RfcFactor;
@@ -42,6 +43,8 @@ namespace EcoMonitor
             CreateMap<News, NewsDTO>().ReverseMap();
             CreateMap<NewsCreateDTO, News>().ReverseMap();
             CreateMap<NewsUpdateDTO, News>().ReverseMap();
+
+            CreateMap<FormattedNews, FormattedNewsDTO>().ReverseMap();
 
             CreateMap<User, NarrowUserDTO>().ReverseMap();
         }
