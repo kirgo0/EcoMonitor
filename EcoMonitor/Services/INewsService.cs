@@ -23,6 +23,7 @@ namespace EcoMonitor.Services
         List<FormattedNewsDTO> GetFilteredFormattedNews(NewsFilterDTO dto, string userId);
         int? UpdateLikeField(string userId, int newsId);
         List<RegionNewsDTO> GetRegionsNews(int regionsCount, int newsCount);
+        List<ActiveRegionsDTO> GetLastActiveRegions(int regionsCount, DateTime? fromDate = null, DateTime? toDate = null);
     }
 
     public class NewsService : INewsService
@@ -113,7 +114,6 @@ namespace EcoMonitor.Services
 
         public List<RegionNewsDTO> GetRegionsNews(int regionsCount, int newsCount)
         {
-
             var regionNews = _newsRepository.dbSet
             .Where(n => n.regions.Any())
             .SelectMany(n => n.regions, (news, region) => new { News = news, Region = region })
@@ -135,6 +135,35 @@ namespace EcoMonitor.Services
             .ToList();
 
             return regionNews;
+        }
+
+        public List<ActiveRegionsDTO> GetLastActiveRegions(int regionsCount, DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            fromDate ??= DateTime.Now.AddHours(-24); // If fromDate is null, set it to today's date at 00:00:00
+            toDate ??= DateTime.Now; // If toDate is null, set it to today's date at 23:59:59
+
+            var result = _newsRepository.dbSet
+                .Where(n => n.regions.Any() && n.post_date >= fromDate && n.post_date <= toDate)
+                .SelectMany(n => n.regions, (news, region) => new { News = news, Region = region })
+                .GroupBy(x => x.Region.name)
+                .OrderByDescending(x => x.Count())
+                .Take(regionsCount)
+                .Select(g => new ActiveRegionsDTO
+                {
+                    name = g.Key,
+                    count = g.Select(x => x.News)
+                        .Select(news => new NarrowNewsDTO
+                        {
+                            id = news.id,
+                            title = news.title
+                        })
+                        .ToList().Count
+                })
+                .ToList();
+
+            result.Reverse();
+
+            return result;
         }
 
     }

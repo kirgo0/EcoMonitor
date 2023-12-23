@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Net;
@@ -239,6 +240,54 @@ namespace EcoMonitor.Controllers
                     return NotFound(_response);
                 }
             }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return StatusCode(500, _response);
+        }
+
+        [HttpGet]
+        [Route("GetNewsActiveRegions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<APIResponse> GetNewsActiveRegions([FromQuery, Range(0, 20)] int countOfRegions, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+        {
+            try
+            {
+                var result = new List<ActiveRegionsDTO>();
+                if(fromDate.HasValue && toDate.HasValue)
+                {
+                    if(fromDate.Value >= toDate.Value)
+                    {
+                        _response.StatusCode = HttpStatusCode.BadRequest;
+                        _response.IsSuccess = false;
+                        _response.ErrorMessages.Add("FromDate must be less that toDate!");
+                        return BadRequest(_response);
+                    }
+                    result = _newsService.GetLastActiveRegions(countOfRegions, fromDate.Value, toDate.Value);
+                } else if(fromDate.HasValue || toDate.HasValue)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("You need to specify two date parameters or none of them");
+                    return BadRequest(_response);
+                } else
+                {
+                    result = _newsService.GetLastActiveRegions(countOfRegions);
+                }
+                if(result.Count == 0)
+                {
+                    return NoContent();
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result;
+                return Ok(_response);
+            } 
             catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;

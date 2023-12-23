@@ -22,18 +22,15 @@ namespace EcoMonitor.Controllers
         private APIResponse _response;
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
-        private IMapper _mapper;
 
-        public UserDataController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+        public UserDataController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _response = new APIResponse();
             _userManager = userManager;
             _roleManager = roleManager;
-            _mapper = mapper;
         }
 
         [HttpGet("GetAllUsersPaginated")]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

@@ -62,7 +62,6 @@ namespace EcoMonitor.Controllers
             }
         }
 
-
         [HttpPost("Login")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
