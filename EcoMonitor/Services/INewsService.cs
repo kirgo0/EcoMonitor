@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
-using EcoMonitor.Model.DTO.News;
+using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;

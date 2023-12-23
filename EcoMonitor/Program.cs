@@ -16,21 +16,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-//var connectionString = builder.Configuration.GetConnectionString("GoogleMySQLPublic");
-
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 string connectionString;
 
 if (env == "Development")
 {
     connectionString = Environment.GetEnvironmentVariable("GoogleMySQLPublic");
-    connectionString = builder.Configuration.GetConnectionString("MySQL");
+    //connectionString = builder.Configuration.GetConnectionString("MySQL");
 }
 else
 {
-    // For other environments (e.g., Production), use the environment variable
     string secret = Environment.GetEnvironmentVariable("GoogleMySQL");
 
     if (secret == null)

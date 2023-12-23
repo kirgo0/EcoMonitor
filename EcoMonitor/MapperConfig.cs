@@ -42,6 +42,8 @@ namespace EcoMonitor
             CreateMap<News, NewsDTO>().ReverseMap();
             CreateMap<NewsCreateDTO, News>().ReverseMap();
             CreateMap<NewsUpdateDTO, News>().ReverseMap();
+
+            CreateMap<User, NarrowUserDTO>().ReverseMap();
         }
     }
 }

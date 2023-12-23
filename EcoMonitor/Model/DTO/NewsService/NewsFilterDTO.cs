@@ -1,4 +1,4 @@
-﻿namespace EcoMonitor.Model.DTO.News
+﻿namespace EcoMonitor.Model.DTO.NewsService
 {
     public class NewsFilterDTO
     {

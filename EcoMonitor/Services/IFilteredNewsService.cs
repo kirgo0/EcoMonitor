@@ -1,5 +1,5 @@
 ﻿using EcoMonitor.Model;
-using EcoMonitor.Model.DTO.News;
+using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Linq.Expressions;

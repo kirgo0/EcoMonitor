@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
+using EcoMonitor.Model.DTO.UserService;
 using EcoMonitor.Model.DTO.UserServiceDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +30,63 @@ namespace EcoMonitor.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _mapper = mapper;
+        }
+
+        [HttpGet("GetAllUsersPaginated")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> GetAllUsersPaginated([FromQuery] int? page, [FromQuery] int? count)
+        {
+            // setting default values
+            if (!page.HasValue)
+                page = 0;
+            if (!count.HasValue)
+                count = 10;
+
+            var users = await _userManager.Users.Skip(page.Value * count.Value).Take(count.Value).ToListAsync();
+            var remainingRowsCount = _userManager.Users.Count() - (page.Value * count.Value + count.Value);
+
+            var result = new PaginatedUsersResponse()
+            {
+                remainingRowsCount = remainingRowsCount > 0 ? remainingRowsCount : 0,
+            };
+
+            if (users.Count() == 0)
+            {
+                _response.Result = result;
+                _response.StatusCode = HttpStatusCode.NoContent;
+                return Ok(_response);
+            }
+
+            var userList = new List<UserDTO>();
+            try
+            {
+                foreach (var user in users)
+                {
+                    userList.Add(
+                        new UserDTO()
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Role = await _userManager.GetRolesAsync(user)
+                        }
+                    );
+                }
+                result.selectedUsers = userList;
+                _response.Result = result;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return StatusCode(500, _response);
+            }
         }
 
         [HttpGet("GetRoles")]
@@ -178,6 +237,37 @@ namespace EcoMonitor.Controllers
                 return StatusCode(500, _response);
             }
         }
+
+        [HttpGet("GetAllNarrowUsers")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> GetAllNarrowUsers()
+        {
+            try
+            {
+                var users = await _userManager.Users.Select(u => new NarrowUserDTO() { Id = u.Id, UserName = u.UserName}).ToListAsync();
+
+                if (users.Count() == 0)
+                {
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    return Ok(_response);
+                }
+
+                _response.Result = users;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return StatusCode(500, _response);
+            }
+        }
+
 
         [HttpGet("GetUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]

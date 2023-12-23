@@ -3,6 +3,7 @@ using EcoMonitor.Model;
 using EcoMonitor.Model.APIResponses;
 using EcoMonitor.Model.DTO;
 using EcoMonitor.Model.DTO.News;
+using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Repository.IRepository;
 using EcoMonitor.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -77,16 +78,23 @@ namespace EcoMonitor.Controllers
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add("Page and count must be a positive numbers!");
+                _response.ErrorMessages.Add("You need to specify two date parameters or none of them");
                 return BadRequest(_response);
             }
 
-            if(fromDate != null && toDate != null && fromDate >= toDate)
+            if(fromDate != null && toDate != null)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add("fromDate must be less that toDate!");
-                return BadRequest(_response);
+                if(fromDate > toDate)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("FromDate must be less that toDate!");
+                    return BadRequest(_response);
+                } else 
+                {
+                    fromDate = new DateTime(toDate.Value.Year, toDate.Value.Month, toDate.Value.Day, 0, 0, 0);
+                    toDate = new DateTime(toDate.Value.Year, toDate.Value.Month, toDate.Value.Day, 23, 59, 59);
+                }
             }
 
                 var filters = new NewsFilterDTO()
@@ -120,10 +128,16 @@ namespace EcoMonitor.Controllers
                     return Ok(_response);
                 } else if(result.Count == 0)
                 {
-                    return NoContent();
+                    _response.StatusCode = HttpStatusCode.OK;
+                    _response.Result = new FormattedNewsResponseDTO()
+                    {
+                        remainingRowsCount = 0,
+                        selectedNews = new List<FormattedNewsDTO>(),
+                        isItEnd = true
+                    };
+                    return Ok(_response);
                 }
             }
-
             catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;

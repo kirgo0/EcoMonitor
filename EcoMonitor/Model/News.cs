@@ -18,8 +18,7 @@ namespace EcoMonitor.Model
         [Required]
         [MinLength(250)]
         public string body { get; set; }
-        [Required]
-        public DateTime post_date { get; set; }
+        public DateTime? post_date { get; set; }
         public DateTime? update_date { get; set; }
 
         public string? source_url { get; set; }

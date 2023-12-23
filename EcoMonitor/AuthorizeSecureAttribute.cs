@@ -30,6 +30,14 @@ namespace EcoMonitor
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
+            var isAllowAnonymous = context.ActionDescriptor.EndpointMetadata
+            .Any(em => em.GetType() == typeof(AllowAnonymousAttribute));
+
+            if (isAllowAnonymous)
+            {
+                return;
+            }
+
             var userId = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
