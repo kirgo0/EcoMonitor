@@ -64,7 +64,6 @@ namespace EcoMonitor.Repository
                     query = query.Include(includeProp);
                 }
             }
-
             return await query.FirstOrDefaultAsync();
         }
 

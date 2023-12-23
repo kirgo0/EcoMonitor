@@ -25,7 +25,6 @@ namespace EcoMonitor.Controllers
         }
 
 
-
         [HttpGet("GetAllNarrowCompanies")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

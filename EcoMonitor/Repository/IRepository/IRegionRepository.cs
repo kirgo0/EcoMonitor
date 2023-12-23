@@ -1,10 +1,11 @@
 ﻿using EcoMonitor.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EcoMonitor.Repository.IRepository
 {
     public interface IRegionRepository : IRepository<Region>
     {
-        DbSet<Region> dbSet { get; }
+        Task<List<TResult>> selectAsync<TResult>(Expression<Func<Region, TResult>> selector);
     }
 }

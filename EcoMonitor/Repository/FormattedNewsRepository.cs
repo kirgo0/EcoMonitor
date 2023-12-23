@@ -16,8 +16,6 @@ namespace EcoMonitor.Repository
             _dbSet = _context.Set<FormattedNews>();
         }
 
-        public DbContext context => _context;
-
         public IEnumerable<FormattedNews> GetView(Expression<Func<FormattedNews, bool>>? filter = null, List<int>? newsIdsOrder = null)
         {
             IQueryable<FormattedNews> query = _dbSet.AsNoTracking();
