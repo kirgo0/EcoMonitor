@@ -48,9 +48,9 @@ namespace EcoMonitor.Controllers
             [FromQuery] bool? newerToOlder,
             [FromQuery] DateTime? fromDate,
             [FromQuery] DateTime? toDate,
-            [FromQuery][Range(0, int.MaxValue)] List<int>? region_ids,
+            [FromQuery] List<int>? region_ids,
             [FromQuery] List<string>? author_ids,
-            [FromQuery][Range(0, int.MaxValue)] List<int>? company_ids
+            [FromQuery] List<int>? company_ids
             )
         {
 
