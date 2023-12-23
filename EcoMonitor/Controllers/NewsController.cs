@@ -92,7 +92,7 @@ namespace EcoMonitor.Controllers
                     return BadRequest(_response);
                 } else 
                 {
-                    fromDate = new DateTime(toDate.Value.Year, toDate.Value.Month, toDate.Value.Day, 0, 0, 0);
+                    fromDate = new DateTime(fromDate.Value.Year, fromDate.Value.Month, fromDate.Value.Day, 0, 0, 0);
                     toDate = new DateTime(toDate.Value.Year, toDate.Value.Month, toDate.Value.Day, 23, 59, 59);
                 }
             }
