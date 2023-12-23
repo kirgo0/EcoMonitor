@@ -1,7 +1,7 @@
-﻿using EcoMonitor.Model;
+﻿using AutoMapper;
+using EcoMonitor.Model;
 using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Repository.IRepository;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Linq.Expressions;
 
 namespace EcoMonitor.Services
@@ -16,6 +16,7 @@ namespace EcoMonitor.Services
         DateTime? fromDate { get; set; }
         DateTime? toDate { get; set; }
         List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto);
+        FormattedNewsDTO GetFormattedNews(int newsId);
     }
 
     public class FilteredNewsService : IFilteredNewsService
@@ -30,14 +31,25 @@ namespace EcoMonitor.Services
         public DateTime? fromDate { get; set; } = null;
         public DateTime? toDate { get; set; } = null;
 
-
         private readonly INewsRepository _newsRepository;
         private readonly IFormattedNewsRepository _formattedNewsRepository;
+        private IMapper _mapper;
 
-        public FilteredNewsService(INewsRepository newsRepository, IFormattedNewsRepository formattedNewsRepository)
+        public FilteredNewsService(INewsRepository newsRepository, IFormattedNewsRepository formattedNewsRepository, IMapper mapper)
         {
             _newsRepository = newsRepository;
             _formattedNewsRepository = formattedNewsRepository;
+            _mapper = mapper;
+        }
+
+        public FormattedNewsDTO GetFormattedNews(int newsId)
+        {
+            var result = _formattedNewsRepository.GetView(fn => fn.id == newsId);
+            if(result.Count() > 0)
+            {
+                return _mapper.Map<FormattedNewsDTO>(result.First());
+            }
+            return null;
         }
 
         public List<FormattedNews> GetFilteredFormattedNews(NewsFilterDTO dto)

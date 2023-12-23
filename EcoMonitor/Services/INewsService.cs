@@ -5,8 +5,11 @@ using EcoMonitor.Model.DTO.NewsService;
 using EcoMonitor.Repository;
 using EcoMonitor.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -16,6 +19,7 @@ namespace EcoMonitor.Services
     {
         int? lastRequestRemainingRows { get; }
         bool? isItEnd { get; }
+        FormattedNewsDTO GetFormattedNewsById(int newsId, string userId);
         List<FormattedNewsDTO> GetFilteredFormattedNews(NewsFilterDTO dto, string userId);
         int? UpdateLikeField(string userId, int newsId);
         List<RegionNewsDTO> GetRegionsNews(int regionsCount, int newsCount);
@@ -53,7 +57,7 @@ namespace EcoMonitor.Services
 
             var mappedResults = _mapper.Map<List<FormattedNewsDTO>>(result);
 
-            if(userId != null)
+            if(!userId.IsNullOrEmpty())
             {
                 mappedResults.ForEach(mr =>
                 {
@@ -63,6 +67,20 @@ namespace EcoMonitor.Services
             return mappedResults;
         }
 
+        public FormattedNewsDTO GetFormattedNewsById(int newsId, string userId)
+        {
+            var result = _filteredNewsService.GetFormattedNews(newsId);
+
+            if(result != null) 
+            {
+                if(!userId.IsNullOrEmpty())
+                {
+                    result.isLiked = _newsRepository.dbSet.Where(n => n.id == result.id).Include("followers").First().followers.Any(u => u.Id == userId);
+                }
+                return result;
+            }
+            return null;
+        }
         public int? UpdateLikeField(string userId, int newsId)
         {
             var query = _newsRepository.dbSet.Where(n => n.id == newsId).Include("followers");

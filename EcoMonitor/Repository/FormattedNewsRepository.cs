@@ -40,5 +40,7 @@ namespace EcoMonitor.Repository
 
             return query;
         }
+
+
     }
 }

@@ -8,7 +8,5 @@ namespace EcoMonitor.Repository.IRepository
     public interface IFormattedNewsRepository
     {
         IEnumerable<FormattedNews> GetView(Expression<Func<FormattedNews, bool>>? filter = null, List<int>? newsIdsOrder = null);
-
-        IQueryable<FormattedNews> query { get; }
     }
 }
