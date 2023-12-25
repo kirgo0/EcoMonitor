@@ -57,7 +57,9 @@ namespace EcoMonitor.Controllers
 
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -80,10 +82,10 @@ namespace EcoMonitor.Controllers
             {
                 if (await _repositoryCity.GetAsync(r => r.id == createDTO.city_id) != null)
                 {
-                    Company passport = _mapper.Map<Company>(createDTO);
+                    Company company = _mapper.Map<Company>(createDTO);
 
-                    await _repository.CreateAsync(passport);
-                    _response.Result = _mapper.Map<CompanyDTO>(passport);
+                    await _repository.CreateAsync(company);
+                    _response.Result = _mapper.Map<CompanyDTO>(company);
                     _response.StatusCode = HttpStatusCode.Created;
                     return Ok(_response);
                 }
@@ -91,21 +93,17 @@ namespace EcoMonitor.Controllers
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("No company with this id was found!");
+                    _response.ErrorMessages.Add("No city with this id was found!");
                     return NotFound(_response);
                 }
 
             }
             catch (DbUpdateException ex)
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Passport with this year already exists");
-                    return Conflict(_response);
-                }
+                _response.StatusCode = HttpStatusCode.Conflict;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Company with this name already exists");
+                return Conflict(_response);
             }
             catch (Exception ex)
             {
