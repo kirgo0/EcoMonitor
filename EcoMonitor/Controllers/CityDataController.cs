@@ -63,14 +63,10 @@ namespace EcoMonitor.Controllers
             }
             catch (DbUpdateException ex)
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("city with this year already exists");
-                    return Conflict(_response);
-                }
+                _response.StatusCode = HttpStatusCode.Conflict;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("city with this year already exists");
+                return Conflict(_response);
             }
             catch (Exception ex)
             {
@@ -128,14 +124,10 @@ namespace EcoMonitor.Controllers
             }
             catch (DbUpdateException ex)
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("city with this year already exists");
-                    return Conflict(_response);
-                }
+                _response.StatusCode = HttpStatusCode.Conflict;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("city with this year already exists");
+                return Conflict(_response);
             }
             catch (Exception ex)
             {

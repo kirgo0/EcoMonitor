@@ -202,14 +202,10 @@ namespace EcoMonitor.Controllers
             }
             catch (DbUpdateException ex)
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Polltuion with this name already exists");
-                    return Conflict(_response);
-                }
+                _response.StatusCode = HttpStatusCode.Conflict;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Polltuion with this name already exists");
+                return Conflict(_response);
             }
             catch (Exception ex)
             {
@@ -368,20 +364,16 @@ namespace EcoMonitor.Controllers
                     if (passport == null)
                         _response.ErrorMessages.Add($"No passport with this id:{updateDTO.passport_id} was found!");
                     if (rfc == null)
-                        _response.ErrorMessages.Add($"No rfc factor with this id:{updateDTO.pollutant_id} was found!");
+                        _response.ErrorMessages.Add($"No pollutant with this id:{updateDTO.pollutant_id} was found!");
                     return NotFound(_response);
                 }
             }
             catch (DbUpdateException ex)
             {
-                MySqlException innerException = ex.InnerException as MySqlException;
-                if (innerException != null && (innerException.Number == 1062))
-                {
-                    _response.StatusCode = HttpStatusCode.Conflict;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add("Factor with this name already exists");
-                    return Conflict(_response);
-                }
+                _response.StatusCode = HttpStatusCode.Conflict;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Factor with this name already exists");
+                return Conflict(_response);
             }
             catch (Exception ex)
             {
